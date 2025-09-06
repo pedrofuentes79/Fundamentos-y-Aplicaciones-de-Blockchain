@@ -158,15 +158,51 @@ for a total of \numpoints \ points.
 \part[5] Derive the formula for the {\em birthday paradox} we saw in class (show your work, explaining every step) and
 calculate the number of elements needed to find a collision with at least 50\%. 
 
-%\begin{solution} %Uncomment and type your solution here
+\begin{solution} %Uncomment and type your solution here
+    Dado que tenemos $n$ posibles fechas y $k$ personas, la probabilidad de que dos personas tengan la misma fecha de cumpleaños es la siguiente.
+    Tomamos $B$ como el evento de que todos tengan fechas de cumpleaños diferentes.
+    Luego, tomar $1 - P(B)$ es la probabilidad de que haya una colisión.
+   
+    Notamos que la primera persona puede elegir cualquiera ($n$ posibilidades).
     
-%\end{solution}
+    Luego, la segunda persona puede elegir $n-1$ fechas.
+    
+    Y así sucesivamente.
+    \begin{align*}
+        P(B) &= \frac{n}{n} \cdot \frac{n-1}{n} \cdot \frac{n-2}{n} \cdot \cdots \cdot \frac{n-k+1}{n} \\
+    \end{align*}
+
+    Luego, lo que nos queda en el numerador es una permutación sin repeticiones.
+    \begin{align*}
+        P(B) &= \frac{n!}{(n-k)!} \cdot \frac{1}{n^k} \\
+        \intertext{Ahora reescribimos la expresión anterior como un producto. Cada factor $\frac{n-i+1}{n}$ se puede reescribir como $1 - \frac{i-1}{n}$, donde $i$ va de 1 a $k$.}
+        P(B) &= \prod_{i=0}^{k-1} \left(1 - \frac{i}{n}\right) \\
+        \intertext{Luego, observemos que cada uno de los elementos de la productoria se ve asi $\frac{1-i}{n}$. A estos los podemos acotar superiormente por $e^{-\frac{i}{n}}$.}
+        P(B) &\leq \prod_{i=0}^{k-1} e^{-\frac{i}{n}} \\
+        \intertext{Luego, reescribimos la productoria como una exponencial.}
+        P(B) &\leq \prod_{i=0}^{k-1} exp(-\frac{i}{n}) = exp(\frac{-1}{n} \cdot \sum_{i=1}^{k-1} i)
+        \intertext{Luego, usamos la propiedad de la suma de los primeros $k-1$ enteros.}
+        P(B) &\leq exp(\frac{-1}{n} \cdot \frac{(k-1)k}{2}) \\
+        P(B) &\leq exp(\frac{-k(k-1)}{2n}) \\
+        \intertext{Luego, despejamos $k$ a partir de $P(B) \leq exp\!\left(-\frac{k(k-1)}{2n}\right)$.}
+        \ln\!\left(\frac{1}{P(B)}\right) &\geq \frac{k(k-1)}{2n} \\
+        k &\geq \sqrt{2n \, \ln\!\left(\frac{1}{P(B)}\right)}
+    \end{align*}
+    
+\end{solution}
 
 \part[5] Apply the above result to find out how many Bitcoin users are needed to initialize their wallet’s seed, which is based on a random selection of 12 random words from the list in \url{https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt}, to have the event that, with probability at least 50\%, at least two users end up with exactly the same seed.
 
-%\begin{solution} %Uncomment and type your solution here
-    
-%\end{solution}
+\begin{solution} %Uncomment and type your solution here
+    La idea es usar la fórmula anterior para despejar $k$ (la cantidad de usuarios).
+    Vemos que esa lista tiene 2048 palabras. Si cada usuario elige 12 palabras de manera aleatoria, y 
+    pueden repetirse, tenemos que $n = 2048^{12} = 2^{132}$. Para colisión con probabilidad al menos 50\%, tomamos $P(B)=0.5$.
+    \begin{align*}
+        k &\geq \sqrt{2n \, \ln\!\left(\tfrac{1}{P(B)}\right)} 
+          = \sqrt{2 \cdot 2^{132} \, \ln 2} \\
+          &\approx 1.17741 \cdot 2^{66} \approx 8.7 \times 10^{19}
+    \end{align*}
+\end{solution}
 
 \end{parts}
 

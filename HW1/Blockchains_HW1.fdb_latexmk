@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1757170495.70738 "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" "Blockchains_HW1.pdf" "Blockchains_HW1" 1757170496.39218 0
-  "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" 1757170495.48188 10587 285076bd7ed4b61be8d399b1459aeb6a ""
+["pdflatex"] 1757186664.36324 "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" "Blockchains_HW1.pdf" "Blockchains_HW1" 1757186665.11439 0
+  "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" 1757186664.99731 13001 fc6708a2a9ea2708ef75e335ebd883d8 ""
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1755987285 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm" 1755987285 2532 9ad73cf4dd2173a847f2a5f5608e0b9a ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/palatino/pplb9t.tfm" 1755987285 2040 c3786843fde023582f6b55ff84d7bc8b ""
@@ -13,6 +13,7 @@
   "/usr/share/texmf-dist/fonts/tfm/adobe/palatino/pplri9t.tfm" 1755987285 1884 964b73670197dd05f77bbb89109ad5f7 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1755987285 916 f87d7c45f9c908e672703b83b72241a3 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm" 1755987285 908 2921f8a10601f252058503cc6570e581 ""
+  "/usr/share/texmf-dist/fonts/tfm/public/cm/cmex10.tfm" 1755987285 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm" 1755987285 1528 abec98dbc43e172678c11b3b9031252a ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmr10.tfm" 1755987285 1296 45809c5a464d5f32c8f98ba97c1bb47f ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmr12.tfm" 1755987285 1288 655e228510b4c2a1abe905c368440826 ""
@@ -30,6 +31,7 @@
   "/usr/share/texmf-dist/fonts/tfm/public/mathpazo/zplmr7t.tfm" 1755987285 1828 bb8add3bd19426549f9267c88b0cb8bd ""
   "/usr/share/texmf-dist/fonts/tfm/public/mathpazo/zplmr7v.tfm" 1755987285 1012 955c4ca523d7827d33db91a33412b048 ""
   "/usr/share/texmf-dist/fonts/tfm/public/mathpazo/zplmr7y.tfm" 1755987285 1316 b4037e9c09961a72f8476628774e1ec1 ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1755987285 30251 6afa5cb1d0204815a708a080681d4674 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1755987285 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1755987285 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb" 1755987285 24393 3b7eb51a67a0a62aec5849271bdb9c2e ""
@@ -37,6 +39,7 @@
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb" 1755987285 31099 c85edf1dd5b9e826d67c9c7293b6786c ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb" 1755987285 24252 1e4e051947e12dfb50fee0b7f4e26e3a ""
   "/usr/share/texmf-dist/fonts/type1/public/fpl/fplrc8a.pfb" 1755987285 62231 6fa2851364e6117779162ea79cb96ef4 ""
+  "/usr/share/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb" 1755987285 9356 a3851bc942e9b6995883193472ba1847 ""
   "/usr/share/texmf-dist/fonts/type1/public/mathpazo/fplmri.pfb" 1755987285 15213 d999bbe8bd9c8f231f3f66a737c76478 ""
   "/usr/share/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb" 1755987285 52406 dad2f72863a03727d5f536c64a69c452 ""
   "/usr/share/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb" 1755987285 52665 661b1e6b26edb5f50dd491f8a701cb57 ""
@@ -48,6 +51,7 @@
   "/usr/share/texmf-dist/fonts/vf/adobe/palatino/pplri9t.vf" 1755987285 1032 8ad5349755097f0356a7dde7d1deb03e ""
   "/usr/share/texmf-dist/fonts/vf/public/mathpazo/zplmr7m.vf" 1755987285 1812 de7624743c8bafe2ce204bec2f72ce7e ""
   "/usr/share/texmf-dist/fonts/vf/public/mathpazo/zplmr7t.vf" 1755987285 1532 73e2c76c81e4f977ab65540630baf4f0 ""
+  "/usr/share/texmf-dist/fonts/vf/public/mathpazo/zplmr7v.vf" 1755987285 1436 3cc3caf644d79936444909aaff6786a8 ""
   "/usr/share/texmf-dist/fonts/vf/public/mathpazo/zplmr7y.vf" 1755987285 1372 31129ac1f6b6f62aaec24c8fed41b02b ""
   "/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1755987285 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/share/texmf-dist/tex/generic/atbegshi/atbegshi.sty" 1755987285 24708 5584a51a7101caf7e6bbf1fc27d8f7b1 ""
@@ -129,9 +133,9 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1755987285 42087 b0f9697c952c8f5a8eede4134282cb0d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1757167607 325445 e037c2d0d08ad8cbac81cfa7969967b5 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1757167812 2008234 074bbb411985f4612de27b23d70acd84 ""
-  "Blockchains_HW1.aux" 1757170496.32289 2769 5dcc758fb4b73cead6aabedb44607044 "pdflatex"
-  "Blockchains_HW1.out" 1757170496.0693 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "Blockchains_HW1.tex" 1757170495.48188 10587 285076bd7ed4b61be8d399b1459aeb6a ""
+  "Blockchains_HW1.aux" 1757186665.03262 2859 38e3474fdd82d207ea98cf25283a6ea3 "pdflatex"
+  "Blockchains_HW1.out" 1757186664.72021 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "Blockchains_HW1.tex" 1757186664.99731 13001 fc6708a2a9ea2708ef75e335ebd883d8 ""
   "ej_1_b.png" 1757169870.31457 98909 e4a585ff15094c4c2b1c7310aa960e24 ""
   "ej_1_c.png" 1757170402.15321 95322 6b16ebcf45ea5096747fd17ff58e4f17 ""
   (generated)
