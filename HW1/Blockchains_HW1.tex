@@ -1,0 +1,283 @@
+\documentclass[12pt,addpoints,answers]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage{microtype}
+\usepackage{xspace}
+\usepackage[svgnames]{xcolor}
+\usepackage[sc]{mathpazo}
+\usepackage{enumitem}
+\usepackage{bm}
+
+\pagestyle{head}
+
+%----------Header--------------------%
+\def\course{{\sc Fundamentos y Aplicaciones de Blockchains}}
+\def\term{Depto. de Computaci\'{o}n, UBA, 2do. Cuatrimestre 2025}
+\def\prof{Lecturer: Juan Garay}
+\newcommand{\handout}[5]{
+   \renewcommand{\thepage}{\arabic{page}}
+   \begin{center}
+   \framebox{
+      \vbox{
+    \hbox to 5.78in { \hfill \large{\course} \hfill }
+    \vspace{2mm}
+%    \hbox to 5.78in { \hfill \large{\prof} \hfill }
+%       \vspace{2mm}
+       \hbox to 5.78in { {\Large \hfill \textbf{#5}  \hfill} }
+       \vspace{2mm}
+       \hbox to 5.78in { \term \hfill \emph{#2}}
+       \hbox to 5.78in { {#3 \hfill \emph{#4}}}
+      }
+   }
+   \end{center}
+   \vspace*{4mm}
+}
+\newcommand{\hw}[4]{\handout{#1}{#2}{#3}{#4}{Homework #1}}
+
+% -- For ignoring stuff -- %
+\newcommand{\ignore}[1]{}
+
+\begin{document}
+
+%----Specs: change accordingly-----%
+\newif\ifstudent % comment out false
+\studenttrue 
+% \studentfalse
+
+\def\hwnum{1}
+\def\issuedate{4/9/25}
+\def\duedate{18/9/25, 17:00 hs} % 
+\def\yourname{} % put your name here
+%------------------------------%
+
+\ifstudent
+\hw{\hwnum}{\issuedate}{Student: \yourname}{Due: \duedate}%
+\else
+\hw{\hwnum}{\issuedate}{\prof}{Due: \duedate}%
+\fi
+
+% \ignore{
+
+\noindent \textbf{Instructions}
+
+\begin{itemize}
+    \item Upload your solution to Campus; make sure it's only one file, and clearly write your name on the first page. Name the file \textsf{`$<$your last name$>$\_HW1.pdf.'} 
+    %{\bf Important:} Make sure to tap {\bf Turn in} after you upload your solution.   
+      
+     If you are proficient with \LaTeX, you may also typeset your submission and submit in PDF format. To do so, uncomment the ``\%\textbackslash begin\{solution\}'' and ``\%\textbackslash end\{solution\}'' lines and write your solution between those two command lines.
+    
+      \item Your solutions will be graded on \emph{correctness} and
+    \emph{clarity}. You should only submit work that you believe to be
+    correct.
+    % , and you will get significantly more partial credit if you     clearly identify the gap(s) in your solution.
+    
+    \item You may collaborate with others on this problem set.  However,
+    you must \textbf{{write up your own solutions}} and \textbf{{list
+      your collaborators and any external sources (including ChatGPT and similar generative AI chatbots)}} for each
+    problem. Be ready to explain your solutions orally to a member of the course staff
+    if asked.
+    
+    \ignore{
+    \item For problems that require you to provide an algorithm, you must
+    give a precise description of the algorithm, together with a proof
+    of correctness and an analysis of its running time. You may use
+    algorithms from class as subroutines. You may also use any facts
+    that we proved in class or from the book.
+    } %IGNORE
+    
+\end{itemize}
+
+\noindent This homework contains \numquestions\ questions,
+% \numpages\ pages
+for a total of \numpoints \ points.
+% and \numbonuspoints\ bonus points.
+
+%\medskip
+\newpage
+
+%} %IGNORE
+
+\begin{questions}
+
+
+\question This question is about Merkle Trees (MTs).
+
+\begin{parts}
+    \part[3] Describe how (cryptographic) hash functions are used in a MT.
+
+    \begin{solution} %Uncomment and type your solution here
+        Un árbol de Merkle usa funciones hash para darle valores únicos a cada chunk.
+        Dado un bloque grande de datos, lo partimos en chunks. Cada uno de esos chunks tiene
+        un hash asociado. Luego, ese arreglo de hashes de cada chunk van a ser las hojas del arbol
+        Las hoja número 1 y 2 van a tener un padre, que va a ser el hash de la combinacion
+        de ellos mismos (es decir, de sus hashes). Lo mismo para las hojas 3 y 4, etc.
+
+        Ahora, hacemos lo mismo para los padres de estas hojas, formando asi los abuelos de las hojas originales.
+        Cada uno de estos abuelos sera padre de dos padres, combinando sus hashes. Repetimos estos pasos hasta llegar a la raíz del árbol.
+
+        De este modo, conseguimos un identificador del árbol en muy poco espacio. Esto nos va a servir
+        para las pruebas de inclusión, que nos permiten validar si el hash de un chunk que, a priori, 
+        no sabemos si es el correcto. Quien quiera verificarlo tiene que reconstruir el árbol de hashes,
+        asumiendo que son dados los hashes necesarios de cada bloque. Si el resultado final (la raíz) es la 
+        misma que nos habíamos guardado, hemos verificado que el chunk que nos dieron era el mismo
+        que teníamos antes. 
+
+    \end{solution}
+
+    \part[3] Describe how a (complete, binary) MT is constructed for the following five chunks of data: ABC, DEF, GHI, KLM, OPQ.
+
+    \begin{solution} %Uncomment and type your solution here
+        En este caso, al ser una cantidad de chunks impares, tenemos que decidir qué vamos a hacer.
+        En mi solución, yo opté por \textbf{no duplicar los hashes del bloque impar}.
+
+        \begin{center}
+            \includegraphics[width=0.62\textwidth]{ej_1_b.png}
+        \end{center}
+    \end{solution}
+    
+    \part[4] Describe how a Patricia Trie is constructed for the following key/value store: \{blah: 17, blahblah: 28, bored: 53, board: 39, aboard: 42, abroad: 17\}.
+
+    \begin{solution}
+        \begin{center}
+            \includegraphics[width=1\textwidth]{ej_1_c.png}
+        \end{center}
+    \end{solution}
+    
+\end{parts}
+
+\newpage
+
+\question Cryptographic hash functions:
+
+\begin{parts}
+
+\part[5] Derive the formula for the {\em birthday paradox} we saw in class (show your work, explaining every step) and
+calculate the number of elements needed to find a collision with at least 50\%. 
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\part[5] Apply the above result to find out how many Bitcoin users are needed to initialize their wallet’s seed, which is based on a random selection of 12 random words from the list in \url{https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt}, to have the event that, with probability at least 50\%, at least two users end up with exactly the same seed.
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\end{parts}
+
+\newpage
+
+\question[10] Prof. Gray has designed a cryptographic hash function $H_G : \{0, 1\}^\ast \rightarrow \{0, 1\}^n$. One of his brilliant ideas is to make $H_G(x) = x$ if $x$ is an $n$-bit string (assume the behavior of $H_G$ is much more complicated on inputs of other lengths). That way, we know with certainty that there are no collisions among $n$-bit strings. Has Prof. Gray made a good design decision? Justify your answer, in particular listing the properties that may or may not be satisfied by the design.
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\newpage
+
+\question[10] As we saw in class, the main security notion for digital signatures is called {\em existential unforgeability}, which prevents an attacker from producing a signature on a message that has not been produced by the legitimate signer. I.e., the attacker should not be able to produce the pair $(m, \sigma)$, where $\sigma$ was not produced by the legitimate signer. 
+
+Show an attack on the plain RSA signature scheme we saw in class in which an attacker forges a signature on an arbitrary message $m$ by asking the signer to sign two other different messages (not necessarily unrelated to $m$).
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\newpage
+
+\question[10] A Bitcoin miner creates a block $B$ which contains address $\alpha$, on which it wants to receive its rewards. An attacker changes the contents of $B$, such that instead of $\alpha$ it defines a new address $\alpha'$, which is controlled by the attacker. Will the attacker receive the rewards that the miner tries to claim? Why or why not? Give a detailed explanation of your answer.
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\newpage
+
+\question[10] Using the course’s Sepolia  Testnet chain, send 0.05 ETH to the address of a fellow student. Describe how you conducted the payment, including the transaction’s id and addresses which you used. (Refer to the Solidity tutorial material “How to Connect
+to a Public Testnet” document shared on Campus, as well as the Solidity
+tutorial material and pointers.) 
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\newpage
+  
+\question The following smart contract has been deployed on the Sepolia Testnet chain:
+
+{\footnotesize
+
+\begin{verbatim}
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0;
+
+contract Bank {
+    mapping(address => uint256) balance;
+    address[] public customers;
+
+    event Deposit(address customer, string message);
+    event Withdrawal(address customer);
+
+    function deposit(string memory message) public payable {
+        require(msg.value > 10);
+        balance[msg.sender] += msg.value - 10;
+
+        customers.push(msg.sender);
+
+        emit Deposit(msg.sender, message);
+    }
+
+    function withdraw() public {
+        uint256 b = balance[msg.sender];
+        balance[msg.sender] = 0;
+        payable(msg.sender).transfer(b);
+
+        emit Withdrawal(msg.sender);
+    }
+
+    function getBalance() public view returns (uint256) {
+        return balance[msg.sender];
+    }
+    
+    function empty() public {
+        require(msg.sender == customers[0]);
+        
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}
+\end{verbatim}
+
+} %FOOTNOTESIZE
+
+ Its deployed address is: 0x4310a5f4Bb3b4Ff09f0694218fA50D2767a00b86. You can compile it and interact with it using Remix. You should successfully create a transaction that interacts with the contract, either depositing or withdrawing from it some coins. 
+ 
+ \begin{parts} 
+ 
+ \part[5] Describe the contract’s functionality (that is, the purpose of each variable, function, and event).
+ 
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\part[15]
+ 
+ Provide the id of the transaction you performed and the address you used.
+ 
+ %\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\end{parts}
+
+\newpage
+
+
+\end{questions}
+
+\end{document}
