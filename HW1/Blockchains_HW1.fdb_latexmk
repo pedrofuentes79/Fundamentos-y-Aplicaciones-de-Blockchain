@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1757186698.91578 "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" "Blockchains_HW1.pdf" "Blockchains_HW1" 1757186699.63295 0
-  "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" 1757186698.66403 12972 b73d612a12ef733e43e10928439c023e ""
+["pdflatex"] 1757186896.08444 "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" "Blockchains_HW1.pdf" "Blockchains_HW1" 1757186896.77613 0
+  "/home/pedrofuentes79/Projects/blockchain/HW1/Blockchains_HW1.tex" 1757186797.04478 12972 b73d612a12ef733e43e10928439c023e ""
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1755987285 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm" 1755987285 2532 9ad73cf4dd2173a847f2a5f5608e0b9a ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/palatino/pplb9t.tfm" 1755987285 2040 c3786843fde023582f6b55ff84d7bc8b ""
@@ -133,9 +133,9 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1755987285 42087 b0f9697c952c8f5a8eede4134282cb0d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1757167607 325445 e037c2d0d08ad8cbac81cfa7969967b5 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1757167812 2008234 074bbb411985f4612de27b23d70acd84 ""
-  "Blockchains_HW1.aux" 1757186699.55943 2859 38e3474fdd82d207ea98cf25283a6ea3 "pdflatex"
-  "Blockchains_HW1.out" 1757186699.28843 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "Blockchains_HW1.tex" 1757186698.66403 12972 b73d612a12ef733e43e10928439c023e ""
+  "Blockchains_HW1.aux" 1757186896.70324 2859 38e3474fdd82d207ea98cf25283a6ea3 "pdflatex"
+  "Blockchains_HW1.out" 1757186896.43262 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "Blockchains_HW1.tex" 1757186797.04478 12972 b73d612a12ef733e43e10928439c023e ""
   "ej_1_b.png" 1757169870.31457 98909 e4a585ff15094c4c2b1c7310aa960e24 ""
   "ej_1_c.png" 1757170402.15321 95322 6b16ebcf45ea5096747fd17ff58e4f17 ""
   (generated)
