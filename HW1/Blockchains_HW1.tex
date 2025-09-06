@@ -210,9 +210,39 @@ calculate the number of elements needed to find a collision with at least 50\%.
 
 \question[10] Prof. Gray has designed a cryptographic hash function $H_G : \{0, 1\}^\ast \rightarrow \{0, 1\}^n$. One of his brilliant ideas is to make $H_G(x) = x$ if $x$ is an $n$-bit string (assume the behavior of $H_G$ is much more complicated on inputs of other lengths). That way, we know with certainty that there are no collisions among $n$-bit strings. Has Prof. Gray made a good design decision? Justify your answer, in particular listing the properties that may or may not be satisfied by the design.
 
-%\begin{solution} %Uncomment and type your solution here
+\begin{solution} %Uncomment and type your solution here
+   La solución no es buena.
+   En particular, algunas de las propiedades que \textbf{no} cumple son las siguientes:
+   \begin{itemize}
+    \item \textbf{Resistencia a preimagen}: Dado $y = H_G(x)$ 
+    no es factible encontrar algún $x'$ tal que $H_G(x') = y$.
+
+    En este caso (tomando que $x$ es un string de $n$ bits), si alguien conoce solamente el hash
+    de un input, no es para nada difícil encontrar el input que produce ese hash.
+    Se reduce a probar el mismo hash como input y se verifica la propiedad. 
     
-%\end{solution}
+    Siguiendo la definición que dimos, sería tomar $x' = x = y$. 
+    Así se verificaría que $H_G(x') = y$.
+
+    \item \textbf{Resistencia a segunda preimagen}: Dado $x$, no es factible encontrar
+    $x' \neq x$ tal que $H_G(x) = H_G(x')$. 
+
+    Esto tampoco lo cumple. En el caso de que $x$ \textbf{no} sea un string de $n$ bits,
+    es factible encontrarlo. Tomemos $x' = H_G(x)$. Por definición de $H_G$, su codominio
+    es de $n$ bits. Por lo tanto, $x' \neq x$ (pues $x$ no es de $n$ bits) y 
+    vemos que $H_G(x') = H_G(H_G(x)) = H_G(x)$.
+
+    En el caso de que $x$ sea un string de $n$ bits, es más difícil. Ahí sí tenemos que
+    buscar sobre todo el espacio de los strings que no sean de $n$ bits para encontrar otro.
+
+    \item \textbf{Pequeños cambios en el input producen grandes cambios en el output}:
+    En este caso, si $x$ es un string de $n$ bits, y $x'$ es un string de $n$ bits
+    que difiere en un bit, $H_G(x) \neq H_G(x')$ (es decir, no hay colisión), pero difieren solamente en un bit.
+    Esto no cumple, ya que se espera que sea un cambio mayor.
+    
+   \end{itemize}
+
+\end{solution}
 
 \newpage
 
@@ -220,17 +250,77 @@ calculate the number of elements needed to find a collision with at least 50\%.
 
 Show an attack on the plain RSA signature scheme we saw in class in which an attacker forges a signature on an arbitrary message $m$ by asking the signer to sign two other different messages (not necessarily unrelated to $m$).
 
-%\begin{solution} %Uncomment and type your solution here
+\begin{solution} %Uncomment and type your solution here
+    Dado un mensaje arbitrario $m$, queremos mostrar como un atancante podría falsificar 
+    una firma de este (llamémosla $\sigma$), pidiendole que firme dos mensajes diferentes.
+    Sea $(N, e)$ la clave pública y $d$ la clave privada.
+
+    Nuestro objetivo es construir $\sigma$ tal que $\sigma = m^d \mod N$.
+
+    Tomemos $m_1$ y $m_2$ dos mensajes diferentes que nos pide la consigna. 
+    Todavía no sabemos qué propiedad van a cumplir, pero sabemos que podemos obtener su firma.
+    Luego, le pedimos al firmante que firme estos mensajes. 
+    Llamamos a las firmas de estos mensajes $\sigma_1$ y $\sigma_2$. 
+    Cumplen que $\sigma_1 = m_1^d \mod N$ y $\sigma_2 = m_2^d \mod N$.
     
-%\end{solution}
+    Volvamos a nuestro objetivo inicial. Queremos que $\sigma = m^d \mod N$.
+    Qué pasa si tomamos $\sigma = \sigma_1 \cdot \sigma_2$?
+    \begin{align*}
+        \sigma &= \sigma_1 \cdot \sigma_2 \\
+        &= (m_1^d \mod N) \cdot (m_2^d \mod N) \\
+        &= (m_1 \cdot m_2)^d \mod N 
+    \end{align*}
+
+    Luego, para llegar a nuestro objetivo de $\sigma = m^d \mod N$, 
+    nos basta con que $m = m_1 \cdot m_2 \mod N$
+
+    Luego, logramos construir una firma para $m$ usando dos firmas de dos mensajes diferentes 
+    entre sí (y diferentes de $m$).
+   
+\end{solution}
 
 \newpage
 
 \question[10] A Bitcoin miner creates a block $B$ which contains address $\alpha$, on which it wants to receive its rewards. An attacker changes the contents of $B$, such that instead of $\alpha$ it defines a new address $\alpha'$, which is controlled by the attacker. Will the attacker receive the rewards that the miner tries to claim? Why or why not? Give a detailed explanation of your answer.
 
-%\begin{solution} %Uncomment and type your solution here
+\begin{solution} %Uncomment and type your solution here
+    El problema plantea lo siguiente: un minero legítimo crea un bloque $B$ donde 
+    se guarda la dirección $\alpha$, donde el minero quiere recibir sus recompensas.
+
+    Luego, un atacante cambia el contenido de $B$, de manera que en lugar de $\alpha$, 
+    define una nueva dirección $\alpha'$, controlada por él. Veamos por qué 
+    el atacante no recibirá las recompensas que el minero intenta reclamar.
+
+    El bloque en sí mismo tiene un hash asociado, que se computa 
+    usando el contenido del bloque. Entonces, si el bloque cambia, el hash va a cambiar también.
+    Un bloque es válido si su hash es menor que el \textit{target} actual.
+
+    El resto de nodos (asumimos legítimos) de la red de Bitcoin, al recibir ese bloque 
+    con la dirección modificada, van a computar el hash del bloque que recibieron y van a ver 
+    que no cumple con la dificultad requerida (es decir, que sea menor que el \textit{target} 
+    actual). Por lo tanto, el bloque no es válido.
+
+    Si el atacante quisiera hacer que este bloque sea válido, tendría que modificar el
+    \textit{nonce} del bloque, ya que el hash actual (el que incluye a $\alpha'$ como dirección) 
+    no va a ser válido puesto que no va a cumplir la dificultad requerida
+    (no va a ser menor que el \textit{target} actual).
+        
+    El rol que cumple el \textit{nonce} es de un contador que se incrementa en $1$ en cada intento
+    de hash. En este intento se prueba si el hash con el nonce actual es menor que el target.
+    Si es menor, el bloque es válido y se puede añadir a la cadena. Si no, se incrementa el nonce
+    y se vuelve a intentar.
+
+    Luego, para obtener un nuevo \textit{nonce} válido, el atacante tendría que hacer fuerza bruta
+    hasta encontrar un \textit{nonce} que, cuando se le hace el hash a todo el bloque (proceso que
+    incluye el \textit{nonce} como input de esa función hash), produzca un hash menor que el 
+    \textit{target} actual.
     
-%\end{solution}
+    Para cuando el atacante haya encontrado un \textit{nonce} válido, la red legítima va a haber 
+    avanzado con el siguiente bloque y no va a aceptar el bloque modificado por el atacante.
+
+    De este modo concluimos que el atacante no recibirá las recompensas que el minero intenta reclamar.
+
+\end{solution}
 
 \newpage
 
