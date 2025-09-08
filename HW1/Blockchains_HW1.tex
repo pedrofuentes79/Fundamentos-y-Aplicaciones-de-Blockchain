@@ -328,9 +328,10 @@ Show an attack on the plain RSA signature scheme we saw in class in which an att
 to a Public Testnet” document shared on Campus, as well as the Solidity
 tutorial material and pointers.) 
 
-%\begin{solution} %Uncomment and type your solution here
-    
-%\end{solution}
+\begin{solution} %Uncomment and type your solution here
+   Mi dirección es 0xEEE267E171c91F70C492bE8061D31aF5C5754F4c.
+
+\end{solution}
 
 \newpage
   
@@ -387,17 +388,46 @@ contract Bank {
  
  \part[5] Describe the contract’s functionality (that is, the purpose of each variable, function, and event).
  
-%\begin{solution} %Uncomment and type your solution here
-    
-%\end{solution}
+\begin{solution} %Uncomment and type your solution here
+    En general, el contrato es una especie de "Banco" que permite a los usuarios depositar y retirar fondos.
+    Veamos parte por parte que hace.
+
+    \begin{itemize}
+        \item \texttt{mapping}: es un diccionario que guarda, para cada dirección, el saldo de la cuenta.
+        \item \texttt{customers}: es un arreglo que guarda todas las direcciones que han depositado o retirado fondos.
+        \item \texttt{Deposit}: es un evento que se emite cuando un usuario deposita fondos. Además de la dirección del cliente, tiene un mensaje.
+        \item \texttt{Withdrawal}: es un evento que se emite cuando un usuario retira fondos.
+        \item \texttt{deposit}: es una función que permite a un usuario depositar fondos. 
+        Tiene un mensaje como parámetro, que es lo que va a recibir el evento Deposit. 
+        Luego, se agregan los fondos al balance de la persona que envió el dinero, restando 10 wei (por eso se requiere que se envíen mas de 10 wei).
+        Algo llamativo es que se agrega la dirección del sender al arreglo de clientes, sin chequear si ya estaba ahí.
+
+        \item \texttt{withdraw}: es una función que permite a un usuario retirar fondos. Su objetivo es vaciar el balance del que llama.
+        Luego, se llama a \texttt{payable(msg.sender).transfer(b)}. Esto hace que podamos llamar a transfer para poder enviar
+        el balance del usuario \texttt{b} (que es la cantidad que tenía el usuario antes de llamar a la función).
+        Finalmente, se emite el evento Withdrawal con la dirección del cliente.
+
+        \item \texttt{getBalance}: es una función que permite a un usuario ver su balance.
+        \item \texttt{empty}: es una función que permite al usuario 0 vaciar todo el balance del contrato.
+        Vemos que se requiere que el usuario que llama sea el primer cliente (el que está en la posición 0 del arreglo \texttt{customers}).
+        Luego, se convierte la dirección del que llama a una dirección payable, para luego llamar a \texttt{transfer} para enviar
+        el balance del contrato. Este balance total del contrato se obtiene con \texttt{address(this).balance}.
+
+    \end{itemize}
+
+\end{solution}
 
 \part[15]
  
  Provide the id of the transaction you performed and the address you used.
  
- %\begin{solution} %Uncomment and type your solution here
-    
-%\end{solution}
+\begin{solution} %Uncomment and type your solution here
+    El id de la transacción es:
+
+    \texttt{0x1044bd3202eef32b72976c02c035b0992b28c6f65f1d743a1a2070902de4c493}.
+    Mi dirección es \texttt{0xEEE267E171c91F70C492bE8061D31aF5C5754F4c}.
+
+\end{solution}
 
 \end{parts}
 
