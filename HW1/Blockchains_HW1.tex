@@ -329,7 +329,28 @@ to a Public Testnet” document shared on Campus, as well as the Solidity
 tutorial material and pointers.) 
 
 \begin{solution} %Uncomment and type your solution here
-   Mi dirección es 0xEEE267E171c91F70C492bE8061D31aF5C5754F4c.
+   Mi dirección es {\footnotesize\texttt{0xEEE267E171c91F70C492bE8061D31aF5C5754F4c}}.
+
+   \href{https://sepolia.etherscan.io/address/0x7F34Ef9C850b48FBD7C8c7B8EEf46C29Efc36eA4}{Esta} es la dirección del contrato que usé para enviarle 0.05 ETH a mi compañero.
+
+   El código fuente del contrato es el siguiente:
+   \begin{verbatim}
+    // SPDX-License-Identifier: GPL-3.0
+
+    pragma solidity >=0.7.0 <0.9.0;
+
+    contract SimpleTransactionSender {
+        function send(address to_address) public payable {
+            payable(to_address).transfer(msg.value);
+        }
+    }
+   
+   \end{verbatim}
+   Como se puede observar, es muy simple y su única función es enviar ETH a una dirección.
+   Luego, usé el método \texttt{send} del contrato, con su dirección como parámetro.
+   Las interacciones (al igual que el \textit{deploy}) los hice usando Remix.
+   
+   Finalmente, esta es la \href{https://sepolia.etherscan.io/tx/0x8151a4313435dabb1ebbf7a7f4bbb55fa69841f1d640f90ed8945c8f3d5ed42f}{transacción en Sepolia Etherscan}.
 
 \end{solution}
 
@@ -382,7 +403,9 @@ contract Bank {
 
 } %FOOTNOTESIZE
 
- Its deployed address is: 0x4310a5f4Bb3b4Ff09f0694218fA50D2767a00b86. You can compile it and interact with it using Remix. You should successfully create a transaction that interacts with the contract, either depositing or withdrawing from it some coins. 
+ Its deployed address is: {\footnotesize\texttt{0x4310a5f4Bb3b4Ff09f0694218fA50D2767a00b86}}.
+
+ You can compile it and interact with it using Remix. You should successfully create a transaction that interacts with the contract, either depositing or withdrawing from it some coins. 
  
  \begin{parts} 
  
@@ -422,10 +445,12 @@ contract Bank {
  Provide the id of the transaction you performed and the address you used.
  
 \begin{solution} %Uncomment and type your solution here
-    El id de la transacción es:
+    El id de la transacción (en la que envié 100 wei) es:
+    
+    {\footnotesize\texttt{0x1044bd3202eef32b72976c02c035b0992b28c6f65f1d743a1a2070902de4c493}}. 
+    
 
-    \texttt{0x1044bd3202eef32b72976c02c035b0992b28c6f65f1d743a1a2070902de4c493}.
-    Mi dirección es \texttt{0xEEE267E171c91F70C492bE8061D31aF5C5754F4c}.
+    Mi dirección es {\footnotesize\texttt{0xEEE267E171c91F70C492bE8061D31aF5C5754F4c}}.
 
 \end{solution}
 
