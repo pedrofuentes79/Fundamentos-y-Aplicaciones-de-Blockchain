@@ -1,0 +1,302 @@
+\documentclass[12pt,addpoints,answers]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage{microtype}
+\usepackage{xspace}
+\usepackage[svgnames]{xcolor}
+\usepackage[sc]{mathpazo}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\pagestyle{head}
+
+%----------Header--------------------%
+\def\course{{\sc Foundations and Applications of Blockchains}}
+\def\term{Depto. de Computaci\'{o}n, $2^{\textrm{do}}$ Cuatrimestre 2023}
+\def\prof{Lecturer: Juan Garay}
+\newcommand{\handout}[5]{
+	\renewcommand{\thepage}{\arabic{page}}
+	\begin{center}
+		\framebox{
+			\vbox{
+				\hbox to 5.78in { \hfill \large{\course} \hfill }
+				\vspace{2mm}
+				%    \hbox to 5.78in { \hfill \large{\prof} \hfill }
+				%       \vspace{2mm}
+				\hbox to 5.78in { {\Large \hfill \textbf{#5}  \hfill} }
+				\vspace{2mm}
+				\hbox to 5.78in { \term \hfill \emph{#2}}
+				\hbox to 5.78in { {#3 \hfill \emph{#4}}}
+			}
+		}
+	\end{center}
+	\vspace*{4mm}
+}
+\newcommand{\hw}[4]{\handout{#1}{#2}{#3}{#4}{Homework #1}}
+
+% -- For ignoring stuff -- %
+\newcommand{\ignore}[1]{}
+
+\begin{document}
+	
+	%----Specs: change accordingly-----%
+	\newif\ifstudent % comment out false
+	\studenttrue 
+	% \studentfalse
+	
+	\def\hwnum{1}
+	\def\issuedate{24/8/23}
+	\def\duedate{25/9/23, 3:30pm} % 
+	\def\yourname{} % put your name here
+%------------------------------%
+
+\ifstudent
+\hw{\hwnum}{\issuedate}{Student: \yourname}{Due: \duedate}%
+\else
+\hw{\hwnum}{\issuedate}{\prof}{Due: \duedate}%
+\fi
+
+% \ignore{
+
+\noindent \textbf{Instructions}
+
+\begin{itemize}
+    \item The way to deliver your solution will be explained in the following classes.   
+      
+     If you are proficient with \LaTeX, you may also typeset your submission and submit in PDF format. To do so, uncomment the ``\%\textbackslash begin\{solution\}'' and ``\%\textbackslash end\{solution\}'' lines and write your solution between those two command lines.
+    
+      \item Your solutions will be graded on \emph{correctness} and
+    \emph{clarity}. You should only submit work that you believe to be
+    correct.
+    % , and you will get significantly more partial credit if you     clearly identify the gap(s) in your solution.
+    
+    \item You may collaborate with others on Questions 1-3 of this problem set.  However,
+    you must \textbf{{write up your own solutions}} and \textbf{{list
+      your collaborators and any external sources}} for each
+    problem. Be ready to explain your solutions orally to a member of the course staff
+    if asked. You {\bf may not} collaborate with others on Question 4.
+    
+    \ignore{
+    \item For problems that require you to provide an algorithm, you must
+    give a precise description of the algorithm, together with a proof
+    of correctness and an analysis of its running time. You may use
+    algorithms from class as subroutines. You may also use any facts
+    that we proved in class or from the book.
+    } %IGNORE
+    
+\end{itemize}
+
+\noindent This homework contains \numquestions\ questions,
+% \numpages\ pages
+for a total of \numpoints \ points.
+% and \numbonuspoints\ bonus points.
+
+%\medskip
+\newpage
+
+%} %IGNORE
+
+\begin{questions}
+
+
+\question We saw in class the notion of {\em digital signatures} and their security properties, {\em existential unforgeability} being an important one. 
+
+\begin{parts}
+    \part[5] Describe the purpose of a {\em Public-Key Infrastructure} (PKI). Can the security properties of a digital signature be guaranteed without a PKI? Elaborate.
+    
+    \begin{solution} %Uncomment and type your solution here
+      El propósito de PKI es proveer a los distintos nodos de una red una manera de verificar la autenticidad de los mensajes enviados por otros participantes.
+      En particular, en clase vimos el problema de los generales bizantinos (la version de que uno le envia a todos un mensaje).
+      Si ese mensaje estuviese firmado, podriamos verificar que viene realmente de ese "general bizantino". 
+      Pero para verificar la clave pública de ese general, necesitamos que esté autorizado por una CA (\textit{Certificate Authority}).
+
+      Las propiedades de una firma digital son las siguientes:
+      \begin{itemize}
+        \item Autenticidad: el mensaje fue enviado por quien lo firmó.
+        \item Integridad: el mensaje no fue modificado.
+        \item No repudio: el firmante no puede negar que lo firmó.
+        \item \textit{Existential unforgeability}: un atacante no puede crear otra firma válida aunque conozca otras firmas de ese mismo firmante.
+      \end{itemize}
+
+      Para cumplir la autenticidad sin PKI, necesitaríamos que cada nodo comparta con los demás su clave pública de una manera confiable.
+      Esto es para que, cuando reciba una firma, pueda verificar que coincide con la verdadera clave pública del firmante. Esto asumiría que la clave pública que tengo de ese participante es la correcta.
+      Con PKI sería mas simple, ya que cada nodo puede verificar la clave pública de otro nodo a través de la CA.
+
+      El no-repudio es particularmente problemático, ya que el firmante podría simplemente alegar que esa no es su clave pública. Si tuviésemos PKI, esta entidad podría intervenir y decir que esa no es la clave pública del firmante.
+      La integridad y \textit{existential unforgeability} se pueden cumplir sin PKI, ya que dependen del algoritmo de firma en sí mismo. 
+    \end{solution}
+
+    \part[5] Bitcoin transactions use the ECDSA signature scheme. Does Bitcoin assume a PKI? If not, reconcile with the above argument.
+ 
+    \begin{solution} %Uncomment and type your solution here
+      Bitcoin no asume un PKI. La razón es porque cada participante de una transacción se identifica por su "dirección", que es justamente su clave pública.
+      Por ende, el hecho de el mensaje esté firmado por esa dirección nos permite verificar que fue enviado por el dueño.
+
+      Si la firma no es válida, la transacción se va a rechazar por los nodos de la red. Esto garantiza que solamente quien tiene la clave privada puede realizar transacciones.
+      En relación a lo dicho anteriormente, vemos que el no repudio se cumple en el sentido de que quien envió una transacción no puede negar haber tenido la clave privada de esa dirección.
+      En cuanto a la autenticación de que una transacción fue enviada por el dueño de la dirección, vemos que esto se cumple por lo explicado anteriormente: la clave pública es justamente la dirección de quien envía los fondos.
+    \end{solution}
+        
+\end{parts}
+
+\newpage
+
+\question[10] Refer to Algorithm 4 (Main Loop) in [GKL15]. We saw in class that blockchains would start from a ``genesis'' block, which would provide an unpredictable string to start mining from. Yet, notice that in Algorithm 4 mining starts from the empty string (${\cal C} \leftarrow \varepsilon$). How come? Explain why this works.
+
+\begin{solution} %Uncomment and type your solution here
+  Vemos que al inicio del algoritmo (${\cal C} \leftarrow \varepsilon$). En la ronda número 2, vale que $init = False$, entonces se entra a la rama else del if.
+
+  Luego, se busca la máxima cadena válida entre las disponibles, incluyendo ${\cal C} = \varepsilon$. Asumimos que no hay otras disponibles en $RECEIVE()$, 
+  entonces que ${\tilde {\cal C}} = \varepsilon$, pues es válida.
+
+  Vemos que es válida observando el código de $validate$, en el que se retorna $ b = V(\textbf{x}_{\cal C}$). Por convención (dicho en el paper), vemos que $\textbf{x}_{\cal C}$ de una cadena vacía es siempre $1$.
+  Por ende, la cadena vacía es válida.
+
+  Luego, se genera el valor $x$ con la funcion $I(\cdot)$ y ${\cal C}_{new}$ con $pow$.
+  Vemos que esta ${\cal C}_{new}$ generada va a ser el resultado de que se tome $s = 0$ en $pow$, y que se agregue un
+  nuevo bloque a ${\tilde {\cal C}}$. Este nuevo bloque va a ser $\langle s, x, ctr \rangle$, con $s = 0$.
+  El $x$ y $ctr$ van a ser los que cumplan con $H(ctr, h) < T$, siendo $h = G(0, x)$
+
+  Luego, obtuvimos una nueva cadena (${\cal C} \leftarrow {\cal C}_{new}$) con dos bloques, el vacío y el que generamos recién.
+  Las rondas subsiguientes entrarían en los casos en los que se van a usar otras cadenas (no la vacía) como ${\tilde{\cal C}}$, ya que
+  ${\cal C}$ contendrá un bloque válido.
+
+  
+\end{solution}
+
+\newpage
+
+\question Refer to Algorithm 1 ({\sf validate}) in [GKL15], which implements the {\em chain validation predicate}. 
+
+\begin{parts}
+
+\part[5] Rewrite {\sf validate} so that it starts checking from the {\em beginning} of the chain. 
+
+\begin{solution} %Uncomment and type your solution here
+
+Tomé en cuenta que, en cada bloque, $s$ representa el hash del bloque anterior. Por eso uso previousHash, que nota el hash del bloque anterior para ser verificado con el siguiente.
+Otra cosa a tener en cuenta es que usé $\text{first}$ para obtener el primer bloque de la cadena, y ${\cal C}^{1 \rceil }$ para obtener toda la cadena excepto el primer bloque.
+
+
+\begin{algorithmic}[1]
+\Function{validate}{$\mathcal{C}$}
+  \State b $\leftarrow$ V($x_\mathcal{C}$) 
+  \If{$b \land \mathcal{C} \neq \varepsilon$}
+    \State $\langle s, x, ctr \rangle \leftarrow \text{first}({\cal C})$ 
+    \If{NOT ($validblock_{q}^{T}(\langle s, x, ctr \rangle)$)} 
+        \State b $\leftarrow$ False
+    \Else
+        \State previousHash $\leftarrow H(ctr, G(s, x))$ 
+        \State $\mathcal{C} \leftarrow {\cal C}^{1 \rceil }$
+        
+        \While{$\mathcal{C} \neq \varepsilon \land b = \text{True}$}
+            \State $\langle s, x, ctr \rangle \leftarrow \text{first}({\cal C})$ \
+            
+            \If{$validblock_{q}^{T}(\langle s, x, ctr \rangle) \land (s = \text{previousHash})$}
+                \State previousHash $\leftarrow H(ctr, G(s, x))$ 
+                \State $\mathcal{C} \leftarrow {\cal C}^{1 \rceil }$ 
+            \Else
+                \State b $\leftarrow$ False 
+            \EndIf
+        \EndWhile
+    \EndIf
+  \EndIf 
+  \State \Return b
+\EndFunction
+\end{algorithmic}
+
+
+\end{solution}
+
+\part[5] Discuss pros and cons of this approach, compared to Algorithm 1's.
+
+\begin{solution} %Uncomment and type your solution here
+  La principal desventaja de este algoritmo es que, si queremos chequear la validez de una cadena muy larga, y que probablemente si hay un error, este en los últimos bloques, vamos a tardar mucho hasta llegar hasta ahí, ya que estamos mirando desde adelante hacia atrás.
+  Decimos que es más probable que haya un error en los últimos bloques ya que, en el contexto de una blockchain real, los bloques se agregan al final, y los nodos comparten una gran parte de la cadena inicial (que si los nodos son honestos debería ser válida). Por lo tanto, tiene sentido comenzar a validar desde el final.
+ 
+
+  Otra desventaja es que es un poco más difícil de entender. Como las cadenas están formadas por bloques que apuntan a su bloque anterior, sería intuitivo ir desde adelante hacia atrás.
+  En este caso estamos yendo desde atrás hacia adelante. 
+
+  Una ventaja que tiene el algoritmo que va hacia adelante es que si, por alguna razón hubiera errores en los primeros bloques, los detectaríamos antes.
+  También puede ser mas fácil de entender el hecho de avanzar hacia adelante, pero una vez que se comprende la estructura de las cadenas y los bloques, queda claro que ir hacia atrás es hacer mejor uso de las estructuras de datos.
+
+
+\end{solution}
+
+\end{parts}
+
+\newpage
+
+\question {\bf Smart contract programming:} {\em Matching Pennies}. This assignment will focus on writing your own smart contract to implement the \href{https://en.wikipedia.org/wiki/Matching_pennies}{Matching Pennies} game. The contract should allow two players (A, B) to play a game of Matching Pennies at any point in time. Each player picks a value of two options---for example, the options might be \{0, 1\}, \{`a’, ‘b’\}, \{True, False\}, etc. If both players pick the same value, the first player wins; if players pick different values, the second player wins. The winner gets 0.1 ETH as reward. After a game ends, two different players should be able to use your contract to play a new game.
+
+\noindent {\bf Example:} Let A, B be two players who play the game, each with 1 ETH.  A picks 0 and B picks 0, so A wins. After the game ends, A’s balance is 1.1 ETH (perhaps minus some gas fees, if necessary).
+
+You should implement the smart contract and deploy it on the course's Goerli Testnet.  Your contract should be as {\em secure}, {\em gas efficient}, and {\em fair} as possible. After deploying your contract, you should engage with other student's contract and play a game on his/her contract. Before you engage with a fellow student’s smart contract, you should evaluate their code and analyze its features in terms of security and fairness (refer to Lectures 07 and 08). You should provide:
+
+\begin{parts}
+
+\part[10] The code of your contract, together with a detailed description of the high-level decisions you made for the design of your contract,
+including:  
+\begin{itemize}
+\item Who pays for the reward of the winner?
+\item How is the reward sent to the winner?
+\item How is it guaranteed that a player cannot cheat?
+\item What data type/structure did you use for the pick options and why?
+\end{itemize}
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\part[5] A detailed gas consumption evaluation of your implementation, including: 
+\begin{itemize}
+\item The cost of deploying and interacting with your contract.
+\item Whether your contract is {\em fair} to both players, including whether one player has to
+pay more gas than the other and why.
+\item Techniques to make your contract more cost efficient and/or fair.
+\end{itemize}
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\part[5] A thorough list of potential hazards and vulnerabilities that {\em may} occur in your contract; provide a detailed analysis of the security mechanisms you use to mitigate such hazards.
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\part[5] A description of your analysis of your fellow student’s contract (along with relative code snippets of their contract, where needed for readability), including: 
+\begin{itemize}
+\item Any vulnerabilities discovered?
+\item How could a player exploit these vulnerabilities to win the game?
+\end{itemize}
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\part[5] The transaction history of an execution of a game on your contract.
+
+%\begin{solution} %Uncomment and type your solution here
+    
+%\end{solution}
+
+\end{parts}
+
+\newpage
+
+\newpage
+
+~\\
+
+\end{questions}
+
+\end{document}
