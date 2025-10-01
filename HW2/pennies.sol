@@ -13,7 +13,9 @@ contract MatchingPennies {
     mapping(address => uint256) public balances;
 
 
-    function play(bool value) public {
+    function play(bool value) public payable {
+        require(msg.value == REWARD / 2, "Must pay half the reward to play");
+        
         // if A hasn't played yet
         if (playerA == address(0)) {
             playerA = msg.sender;
