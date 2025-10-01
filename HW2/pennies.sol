@@ -88,7 +88,11 @@ contract MatchingPennies {
     function withdraw() public {
         uint256 balance = balances[msg.sender];
         balances[msg.sender] = 0;
-        payable(msg.sender).transfer(balance);
+
+        // use call instead of transfer to avoid gas limits
+        // "security standard" 
+        (bool success, ) = payable(msg.sender).call{value: balance}("");
+        require(success, "Transfer failed");
     }
 
 
