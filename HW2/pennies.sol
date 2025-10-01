@@ -20,10 +20,13 @@ contract MatchingPennies {
         if (playerA == address(0)) {
             playerA = msg.sender;
             valueA = value;
-            return; 
-        } else {
+            return; // so that we wait until B plays 
+        } else if (playerB == address(0)) {
+            require(msg.sender != playerA, "Player A cannot play again");
             playerB = msg.sender;
             valueB = value;
+        } else {
+            revert("Game already started");
         }
 
         // When reaching this point, we know that both have played
