@@ -38,7 +38,7 @@ contract MatchingPennies {
     function revealPlay(bool value, string memory secret) public {
         require(playerA != address(0) && playerB != address(0), "Both players must have played");
 
-        bytes32 hash = keccak256(abi.encodePacked(value, secret));
+        bytes32 hash = keccak256(abi.encode(value, secret));
 
         if (msg.sender == playerA) {
             require(!revealedA, "Player A has already revealed");
@@ -59,7 +59,7 @@ contract MatchingPennies {
         }
     }
 
-    function determineWinner() public {
+    function determineWinner() private {
         require(revealedA && revealedB, "Both players must have revealed");
 
         address winner;
@@ -89,6 +89,7 @@ contract MatchingPennies {
     
     function withdraw() public {
         uint256 balance = balances[msg.sender];
+        require(balance > 0, "No balance to withdraw");
         balances[msg.sender] = 0;
 
         // use call instead of transfer to avoid gas limits
@@ -96,6 +97,12 @@ contract MatchingPennies {
         (bool success, ) = payable(msg.sender).call{value: balance}("");
         require(success, "Transfer failed");
     }
+
+    // Idea: agregar una funcion `forfeit` (rendirse)
+    // que puede ser llamada por A para retirar sus fondos si
+    // no hubo ningun jugador B que se haya unido a la partida.
+    // Esta funcion chequearia que el sender sea A, que B no haya jugado
+    // y le dejaria a A sus fondos en `balances[playerA]`
 
 
 }
