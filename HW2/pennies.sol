@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity >=0.7.0 <0.9.0;
+// This makes sure we use a solidity version that automatically handles
+// overflow/underflow for me :D. It reverts the operation if it overflows/underflows.
+pragma solidity ^0.8.0;
 
 contract MatchingPennies {
     address public playerA;
