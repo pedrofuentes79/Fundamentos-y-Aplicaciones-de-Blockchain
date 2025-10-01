@@ -44,10 +44,12 @@ contract MatchingPennies {
             require(!revealedA, "Player A has already revealed");
             require(hash == commitmentA, "Commitment does not match");
             valueA = value;
+            revealedA = true;
         } else if (msg.sender == playerB) {
             require(!revealedB, "Player B has already revealed");
             require(hash == commitmentB, "Commitment does not match");
             valueB = value;
+            revealedB = true;
         } else {
             revert("Not a player");
         }
