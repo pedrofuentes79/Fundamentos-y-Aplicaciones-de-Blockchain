@@ -25,7 +25,7 @@ contract MatchingPennies {
     //   commitPlay(commitment) {value: 0.05 ether}
     function commitPlay(bytes32 commitment) public payable {
         require(msg.value == REWARD / 2, "Must pay half the reward to play");
-        
+
         // if A hasn't played yet
         if (playerA == address(0)) {
             playerA = msg.sender;
@@ -46,10 +46,8 @@ contract MatchingPennies {
         }
     }
 
-
-
     // Example:
-    //   revealPlay(my_choice, "mySecret123"), 
+    //   revealPlay(my_choice, "mySecret123"),
     //      where "mySecret123" is the secret used in commitPlay
     function revealPlay(bool value, string memory secret) public {
         require(playerA != address(0) && playerB != address(0), "Both players must have played");
@@ -79,7 +77,7 @@ contract MatchingPennies {
         require(revealedA && revealedB, "Both players must have revealed");
 
         address winner;
-        if (valueA == valueB){
+        if (valueA == valueB) {
             winner = playerA;
         } else {
             winner = playerB;
@@ -87,24 +85,18 @@ contract MatchingPennies {
         // have the winner be able to retrieve the funds later.
         balances[winner] += REWARD;
         cleanUp();
-    } 
+    }
 
     function getBalance() public view returns (uint256) {
         return balances[msg.sender];
     }
-    
+
     function withdraw() public {
         uint256 balance = balances[msg.sender];
         require(balance > 0, "No balance to withdraw");
         balances[msg.sender] = 0;
         payable(msg.sender).transfer(balance);
     }
-
-    // Idea: agregar una funcion `forfeit` (rendirse)
-    // que puede ser llamada por A para retirar sus fondos si
-    // no hubo ningun jugador B que se haya unido a la partida.
-    // Esta funcion chequearia que el sender sea A, que B no haya jugado
-    // y le dejaria a A sus fondos en `balances[playerA]`
 
     function cleanUp() private {
         playerA = address(0);
@@ -143,15 +135,15 @@ contract MatchingPennies {
         cleanUp();
     }
 
-
     // This allows player A to get back their funds if no one played him yet
     // This can be done instantly, not necessary to wait for the reveal period.
     function forfeitIfNoOnePlayed() public {
         require(msg.sender == playerA, "Only player A can forfeit");
         require(playerB == address(0), "Player B has already played");
-        require(block.timestamp - playerAWaitTime > MINIMUM_OPPONENT_WAIT, "Forfeit not allowed yet");
+        require(
+            block.timestamp - playerAWaitTime > MINIMUM_OPPONENT_WAIT, "Forfeit not allowed yet"
+        );
         balances[playerA] += REWARD / 2;
         cleanUp();
     }
-
 }
