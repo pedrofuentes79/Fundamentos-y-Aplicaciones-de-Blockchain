@@ -251,9 +251,170 @@ including:
 \item What data type/structure did you use for the pick options and why?
 \end{itemize}
 
-%\begin{solution} %Uncomment and type your solution here
+\begin{solution} %Uncomment and type your solution here
+  Dejo acá el código fuente del contrato. Si lo quieren leer un poco mejor, dejo el \href{https://github.com/pedrofuentes79/Fundamentos-y-Aplicaciones-de-Blockchains/blob/main/src/HW2_MatchingPennies.sol}{link del archivo en github} que uso para que lo puedan leer con linter.
+
+  \begin{verbatim}
+// SPDX-License-Identifier: GPL-3.0
+
+// This makes sure we use a solidity version that 
+// automatically handles overflow/underflow for me :D. 
+// It reverts the operation if it overflows/underflows.
+pragma solidity ^0.8.0;
+
+contract MatchingPennies {
+    address public playerA;
+    address public playerB;
+    bool public valueA;
+    bool public revealedA;
+    bool public valueB;
+    bool public revealedB;
+    bytes32 public commitmentA;
+    bytes32 public commitmentB;
+    uint256 public constant REWARD = 0.1 ether;
+    mapping(address => uint256) public balances;
+
+    // Example:
+    // bytes32 commitment = keccak256(
+    //  abi.encode(true, "mySecret123")
+    // );
+    // commitPlay(commitment) {value: 0.05 ether}
+    function commitPlay(bytes32 commitment) public payable {
+        require(
+          msg.value == REWARD / 2, 
+          "Must pay half the reward to play"
+        );
+        
+        // if A hasn't played yet
+        if (playerA == address(0)) {
+            playerA = msg.sender;
+            commitmentA = commitment;
+            return;
+        } else if (playerB == address(0)) {
+            require(
+              msg.sender != playerA, 
+              "Player A cannot play again"
+            );
+            playerB = msg.sender;
+            commitmentB = commitment;
+            return;
+        } else {
+            revert("Game already started");
+        }
+    }
+
+    // Example:
+    //   revealPlay(my_choice, "mySecret123"), 
+    //      where "mySecret123" is the secret used in commitPlay
+    function revealPlay(bool value, string memory secret) public {
+        require(
+          playerA != address(0) && playerB != address(0), 
+          "Both players must have played"
+        );
+
+        bytes32 hash = keccak256(abi.encode(value, secret));
+
+        if (msg.sender == playerA) {
+            require(!revealedA, "Player A has already revealed");
+            require(
+              hash == commitmentA, 
+              "Commitment does not match"
+            );
+
+            valueA = value;
+            revealedA = true;
+        } else if (msg.sender == playerB) {
+            require(!revealedB, "Player B has already revealed");
+            require(
+              hash == commitmentB, 
+              "Commitment does not match"
+            );
+
+            valueB = value;
+            revealedB = true;
+        } else {
+            revert("Not a player");
+        }
+
+        if (revealedA && revealedB) {
+            determineWinner();
+        }
+    }
+
+    function determineWinner() private {
+        require(
+          revealedA && revealedB, 
+          "Both players must have revealed"
+        );
+
+        address winner;
+        if (valueA == valueB){
+            winner = playerA;
+        } else {
+            winner = playerB;
+        }
+
+        // clean up the state
+        playerA = address(0);
+        playerB = address(0);
+        revealedA = false;
+        revealedB = false;
+        valueA = false;
+        valueB = false;
+        commitmentA = bytes32(0);
+        commitmentB = bytes32(0);
+
+        // have the winner be able to retrieve the funds later.
+        balances[winner] += REWARD;
+    } 
+
+    function getBalance() public view returns (uint256) {
+        return balances[msg.sender];
+    }
     
-%\end{solution}
+    function withdraw() public {
+        uint256 balance = balances[msg.sender];
+        require(balance > 0, "No balance to withdraw");
+        balances[msg.sender] = 0;
+        payable(msg.sender).transfer(balance);
+    }
+
+    // Idea: agregar una funcion `forfeit` (rendirse)
+    // que puede ser llamada por A para retirar sus fondos si
+    // no hubo ningun jugador B que se haya unido a la partida.
+    // Esta funcion chequearia que 
+    // el sender sea A, que B no haya jugado
+    // y le dejaria a A sus fondos en `balances[playerA]`
+}
+  \end{verbatim}
+  
+  Explicación del contrato:
+
+  El premio del ganador lo paga quien perdió. Es decir, ambos jugadores (A y B) pagan la mitad del premio al participar (en el método $\texttt{commitPlay}$ )
+  Para este método los participantes deben enviar un commitment de su elección. Este commitment lo generan con 
+  
+  $\texttt{bytes32 commitment = keccak256(abi.encode(true, "mySecret123"));}$.
+
+  Junto con el commitment, deben enviar exactamente 0.05 ether.
+
+  Luego, una vez que el segundo jugador ya jugó, el primer jugador puede revelar su elección con $\texttt{revealPlay(my\_choice, "mySecret123")}$.
+
+  Ahí se tienen que enviar los mismos valores de $\texttt{my\_choice}$ y $\texttt{"mySecret123"}$ que se usaron antes.
+  Una vez que $B$ revela su elección, se determina el ganador, que puede retirar sus fondos usando el método $\texttt{withdraw}$.
+
+  Se garantiza que un jugador no pueda hacer trampas por los siguientes motivos:
+  \begin{itemize}
+    \item Ningún jugador puede ver la elección del otro jugador, ya que lo que se envía es un commitment. Si no fuese así, el segundo jugador siempre estaría en ventaja, pues podría ver en la blockchain la elección de $A$ y elegir lo opuesto para ganar.
+    \item Las elecciones no pueden reveladas si ambos jugadores no commitearon aún.
+    \item Se garantiza que un jugador no pueda cambiar su elección una vez que envió el commit, pues no podría haber obtenido el mismo hash con otra elección.
+  \end{itemize}
+
+  Para la elección usé un booleano, ya que me pareció lo mas simple dado que solo hay dos opciones. 
+  Guardé otro booleano para cada una de las elecciones, que me dice si el valor que tengo guardado en $\texttt{valueA}$ o $\texttt{valueB}$ fue efectivamente revelado.
+  
+  Otra opción podría haber siendo guardar un entero, con valores $0$, $1$ y $2$. El 0 representaría que no se ha revelado la opción aún.
+  El 1 sería true y el 2 sería false.
+\end{solution}
 
 \part[5] A detailed gas consumption evaluation of your implementation, including: 
 \begin{itemize}
