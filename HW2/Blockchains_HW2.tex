@@ -252,13 +252,15 @@ including:
 \end{itemize}
 
 \begin{solution} %Uncomment and type your solution here
-  Dejo acá el código fuente del contrato. Si lo quieren leer un poco mejor, dejo el \href{https://github.com/pedrofuentes79/Fundamentos-y-Aplicaciones-de-Blockchains/blob/main/src/HW2_MatchingPennies.sol}{link del archivo en github} que uso para que lo puedan leer con linter.
+  Dejo acá el código fuente del contrato. 
+  Tuve que formatearlo para que entre en el espacio horizontal del pdf.
+  Si lo quieren leer un poco mejor, dejo el \href{https://github.com/pedrofuentes79/Fundamentos-y-Aplicaciones-de-Blockchain/blob/main/src/HW2_MatchingPennies.sol}{link del archivo en github} que uso para que lo puedan leer con linter.
 
   \begin{verbatim}
 // SPDX-License-Identifier: GPL-3.0
 
-// This makes sure we use a solidity version that 
-// automatically handles overflow/underflow for me :D. 
+// This makes sure we use a solidity version 
+// that automatically handles overflow/underflow for me :D. 
 // It reverts the operation if it overflows/underflows.
 pragma solidity ^0.8.0;
 
@@ -272,64 +274,85 @@ contract MatchingPennies {
     bytes32 public commitmentA;
     bytes32 public commitmentB;
     uint256 public constant REWARD = 0.1 ether;
+    uint256 public REVEAL_PERIOD = 1 hours;
     mapping(address => uint256) public balances;
+    uint256 public constant MINIMUM_OPPONENT_WAIT = 5 minutes;
+    uint256 public playerAWaitTime;
+    uint256 public lastCommitmentTime;
 
     // Example:
-    // bytes32 commitment = keccak256(
-    //  abi.encode(true, "mySecret123")
-    // );
-    // commitPlay(commitment) {value: 0.05 ether}
-    function commitPlay(bytes32 commitment) public payable {
+    //   bytes32 commitment = keccak256(
+    //     abi.encode(true, "mySecret123")
+    //   );
+    //   commitPlay(commitment) {value: 0.05 ether}
+    function commitPlay(bytes32 commitment)
+        public
+        payable
+    {
         require(
-          msg.value == REWARD / 2, 
-          "Must pay half the reward to play"
+            msg.value == REWARD / 2,
+            "Must pay half the reward to play"
         );
-        
+
         // if A hasn't played yet
         if (playerA == address(0)) {
             playerA = msg.sender;
             commitmentA = commitment;
-            return;
+            // Tracks how long A is waiting for a player
+            playerAWaitTime = block.timestamp;
         } else if (playerB == address(0)) {
             require(
-              msg.sender != playerA, 
-              "Player A cannot play again"
+                msg.sender != playerA,
+                "Player A cannot play again"
             );
             playerB = msg.sender;
             commitmentB = commitment;
-            return;
         } else {
             revert("Game already started");
+        }
+
+        // If both have committed, 
+        // start the countdown for the reveal period
+        if (playerA != address(0) && playerB != address(0))
+        {
+            lastCommitmentTime = block.timestamp;
         }
     }
 
     // Example:
-    //   revealPlay(my_choice, "mySecret123"), 
-    //      where "mySecret123" is the secret used in commitPlay
-    function revealPlay(bool value, string memory secret) public {
+    //   revealPlay(my_choice, "mySecret123"),
+    //   where "mySecret123" is the secret used in commitPlay
+    function revealPlay(
+        bool value,
+        string memory secret
+    )
+        public
+    {
         require(
-          playerA != address(0) && playerB != address(0), 
-          "Both players must have played"
+            playerA != address(0) && playerB != address(0),
+            "Both players must have played"
         );
 
         bytes32 hash = keccak256(abi.encode(value, secret));
 
         if (msg.sender == playerA) {
-            require(!revealedA, "Player A has already revealed");
             require(
-              hash == commitmentA, 
-              "Commitment does not match"
+                !revealedA, "Player A has already revealed"
             );
-
+            require(
+                hash == commitmentA,
+                "Commitment does not match"
+            );
             valueA = value;
             revealedA = true;
         } else if (msg.sender == playerB) {
-            require(!revealedB, "Player B has already revealed");
             require(
-              hash == commitmentB, 
-              "Commitment does not match"
+                !revealedB, "Player B has already revealed"
             );
-
+            require(
+                hash == commitmentB,
+                "Commitment does not match"
+            );
             valueB = value;
             revealedB = true;
         } else {
@@ -343,18 +366,33 @@ contract MatchingPennies {
 
     function determineWinner() private {
         require(
-          revealedA && revealedB, 
-          "Both players must have revealed"
+            revealedA && revealedB,
+            "Both players must have revealed"
         );
 
         address winner;
-        if (valueA == valueB){
+        if (valueA == valueB) {
             winner = playerA;
         } else {
             winner = playerB;
         }
+        // have the winner be able to retrieve the funds later.
+        balances[winner] += REWARD;
+        cleanUp();
+    }
 
-        // clean up the state
+    function getBalance() public view returns (uint256) {
+        return balances[msg.sender];
+    }
+
+    function withdraw() public {
+        uint256 balance = balances[msg.sender];
+        require(balance > 0, "No balance to withdraw");
+        balances[msg.sender] = 0;
+        payable(msg.sender).transfer(balance);
+    }
+
+    function cleanUp() private {
         playerA = address(0);
         playerB = address(0);
         revealedA = false;
@@ -363,29 +401,68 @@ contract MatchingPennies {
         valueB = false;
         commitmentA = bytes32(0);
         commitmentB = bytes32(0);
-
-        // have the winner be able to retrieve the funds later.
-        balances[winner] += REWARD;
-    } 
-
-    function getBalance() public view returns (uint256) {
-        return balances[msg.sender];
-    }
-    
-    function withdraw() public {
-        uint256 balance = balances[msg.sender];
-        require(balance > 0, "No balance to withdraw");
-        balances[msg.sender] = 0;
-        payable(msg.sender).transfer(balance);
+        lastCommitmentTime = 0;
     }
 
-    // Idea: agregar una funcion `forfeit` (rendirse)
-    // que puede ser llamada por A para retirar sus fondos si
-    // no hubo ningun jugador B que se haya unido a la partida.
-    // Esta funcion chequearia que 
-    // el sender sea A, que B no haya jugado
-    // y le dejaria a A sus fondos en `balances[playerA]`
+    function claimWinByTimeOut() public {
+        require(
+            playerA != address(0) && playerB != address(0),
+            "Both players must have played"
+        );
+        require(
+            block.timestamp - lastCommitmentTime
+                > REVEAL_PERIOD,
+            "Reveal period not over"
+        );
+        require(
+            !(revealedA && revealedB),
+            "Game already finished"
+        );
+
+        // Case 1: No one revealed
+        if (!revealedA && !revealedB) {
+            // we give the funds back to both players
+            balances[playerA] += REWARD / 2;
+            balances[playerB] += REWARD / 2;
+        }
+        // Case 2: Only one player revealed.
+        // we give all the funds to the only one who revealed
+        else {
+            address winner;
+            if (revealedA) {
+                winner = playerA;
+            } else {
+                winner = playerB;
+            }
+            balances[winner] += REWARD;
+        }
+        cleanUp();
+    }
+
+    // This allows player A to get back their funds 
+    // if no one played them yet
+    // This can be done instantly, 
+    // not necessary to wait for the reveal period.
+    function forfeitIfNoOnePlayed() public {
+        require(
+            msg.sender == playerA,
+            "Only player A can forfeit"
+        );
+        require(
+            playerB == address(0),
+            "Player B has already played"
+        );
+        require(
+            block.timestamp - playerAWaitTime
+                > MINIMUM_OPPONENT_WAIT,
+            "Forfeit not allowed yet"
+        );
+        balances[playerA] += REWARD / 2;
+        cleanUp();
+    }
 }
+
+
   \end{verbatim}
   
   Explicación del contrato:
@@ -407,6 +484,9 @@ contract MatchingPennies {
     \item Ningún jugador puede ver la elección del otro jugador, ya que lo que se envía es un commitment. Si no fuese así, el segundo jugador siempre estaría en ventaja, pues podría ver en la blockchain la elección de $A$ y elegir lo opuesto para ganar.
     \item Las elecciones no pueden reveladas si ambos jugadores no commitearon aún.
     \item Se garantiza que un jugador no pueda cambiar su elección una vez que envió el commit, pues no podría haber obtenido el mismo hash con otra elección.
+    \item Si el jugador $A$ no encontró a nadie en el tiempo especificado, puede retirar sus fondos usando el método $\texttt{forfeitIfNoOnePlayed}$.
+    \item Si el jugador $A$ revela su elección y $B$ no lo hizo (o viceversa), y pasó mas de una hora desde que los dos jugadores hicieron commit, el que haya revelado gana.
+      \subitem Esto es para evitar que un jugador revele su elección (que se haga visible en la blockchain por medio de la transacción de la función $\texttt{revealPlay}$) y el otro jugador no revele la suya (dado que sabe que va a perder, pues leyó lo de $A$). En este caso, quien ya reveló puede reclamar el premio (si pasó una hora)
   \end{itemize}
 
   Para la elección usé un booleano, ya que me pareció lo mas simple dado que solo hay dos opciones. 
@@ -424,15 +504,27 @@ pay more gas than the other and why.
 \item Techniques to make your contract more cost efficient and/or fair.
 \end{itemize}
 
-%\begin{solution} %Uncomment and type your solution here
+\begin{solution} %Uncomment and type your solution here
     
-%\end{solution}
+  El contrato $\textbf{no es justo}$ para ambos jugadores. Esto es porque, entre otros desbalances, el último en revelar tiene que pagar por la ejecución de la función
+  $\texttt{deterimneWinner}$, y luego ejecuta $\texttt{cleanUp}$ para retornar al estado inicial.
+
+  Para hacerlo mas eficiente, se podrían usar menos variables, los timestamps se podrían guardar en variables de tamaño más chico.
+  Quizás para hacerlo más justo se podría hacer el cleanUp una vez que alguien quiera empezar un nuevo juego.
+
+\end{solution}
 
 \part[5] A thorough list of potential hazards and vulnerabilities that {\em may} occur in your contract; provide a detailed analysis of the security mechanisms you use to mitigate such hazards.
 
-%\begin{solution} %Uncomment and type your solution here
-    
-%\end{solution}
+\begin{solution} %Uncomment and type your solution here
+  \begin{itemize}
+    \item Fondos bloqueados: Si $A$ y $B$ jugaron, pero $B$ no reveló su elección y $A$ sí lo hizo, $A$ puede reclamar su recompensa si pasó más de una hora desde que $B$ hizo commit (y no reveló su elección).
+    \item Reentrancy: En el único momento en el que se sale de este contrato es en la función $\texttt{withdraw}$, cuando un jugador quiere retirar sus fondos. Y la llamada a $\texttt{transfer}$ se hace luego de haber actualizado el estado. 
+    \item Frontrunning: Los jugadores tienen que hacer un commit con el hash de su elección + un secreto que elijan, y luego hacen el reveal con los mismos valores. 
+         De este modo, nos aseguramos de que si alguien ve la transacción inicial (el commit) en la blockchain, no puede saber el valor de antemano. Si fuese así, el juego sería trivial para el jugador B
+  \end{itemize}
+
+\end{solution}
 
 \part[5] A description of your analysis of your fellow student’s contract (along with relative code snippets of their contract, where needed for readability), including: 
 \begin{itemize}
