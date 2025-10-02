@@ -16,7 +16,9 @@ contract MatchingPennies {
     uint256 public constant REWARD = 0.1 ether;
     mapping(address => uint256) public balances;
 
-
+    // Example:
+    //   bytes32 commitment = keccak256(abi.encode(true, "mySecret123"));
+    //   commitPlay(commitment) {value: 0.05 ether}
     function commitPlay(bytes32 commitment) public payable {
         require(msg.value == REWARD / 2, "Must pay half the reward to play");
         
@@ -35,6 +37,9 @@ contract MatchingPennies {
         }
     }
 
+    // Example:
+    //   revealPlay(my_choice, "mySecret123"), 
+    //      where "mySecret123" is the secret used in commitPlay
     function revealPlay(bool value, string memory secret) public {
         require(playerA != address(0) && playerB != address(0), "Both players must have played");
 
