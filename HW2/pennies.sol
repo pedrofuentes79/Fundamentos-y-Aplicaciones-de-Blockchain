@@ -91,11 +91,7 @@ contract MatchingPennies {
         uint256 balance = balances[msg.sender];
         require(balance > 0, "No balance to withdraw");
         balances[msg.sender] = 0;
-
-        // use call instead of transfer to avoid gas limits
-        // "security standard" 
-        (bool success, ) = payable(msg.sender).call{value: balance}("");
-        require(success, "Transfer failed");
+        payable(msg.sender).transfer(balance);
     }
 
     // Idea: agregar una funcion `forfeit` (rendirse)
