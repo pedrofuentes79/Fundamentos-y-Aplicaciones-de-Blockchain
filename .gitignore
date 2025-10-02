@@ -4,3 +4,12 @@
 **/*.log
 **/*.out
 **/*.synctex.gz
+
+# Foundry
+cache/
+out/
+broadcast/
+lib/
+
+# dotenv
+.env
