@@ -14,7 +14,11 @@ contract MatchingPennies {
     bytes32 public commitmentA;
     bytes32 public commitmentB;
     uint256 public constant REWARD = 0.1 ether;
+    uint256 public REVEAL_PERIOD = 1 hours;
     mapping(address => uint256) public balances;
+    uint256 public constant MINIMUM_OPPONENT_WAIT = 5 minutes;
+    uint256 public playerAWaitTime;
+    uint256 public lastCommitmentTime;
 
     // Example:
     //   bytes32 commitment = keccak256(abi.encode(true, "mySecret123"));
@@ -26,16 +30,23 @@ contract MatchingPennies {
         if (playerA == address(0)) {
             playerA = msg.sender;
             commitmentA = commitment;
-            return;
+            // Tracks how many time is A waiting for a player to join
+            playerAWaitTime = block.timestamp;
         } else if (playerB == address(0)) {
             require(msg.sender != playerA, "Player A cannot play again");
             playerB = msg.sender;
             commitmentB = commitment;
-            return;
         } else {
             revert("Game already started");
         }
+
+        // If both have committed, start the countdown for the reveal period
+        if (playerA != address(0) && playerB != address(0)) {
+            lastCommitmentTime = block.timestamp;
+        }
     }
+
+
 
     // Example:
     //   revealPlay(my_choice, "mySecret123"), 
@@ -73,19 +84,9 @@ contract MatchingPennies {
         } else {
             winner = playerB;
         }
-
-        // clean up the state
-        playerA = address(0);
-        playerB = address(0);
-        revealedA = false;
-        revealedB = false;
-        valueA = false;
-        valueB = false;
-        commitmentA = bytes32(0);
-        commitmentB = bytes32(0);
-
         // have the winner be able to retrieve the funds later.
         balances[winner] += REWARD;
+        cleanUp();
     } 
 
     function getBalance() public view returns (uint256) {
@@ -105,5 +106,52 @@ contract MatchingPennies {
     // Esta funcion chequearia que el sender sea A, que B no haya jugado
     // y le dejaria a A sus fondos en `balances[playerA]`
 
+    function cleanUp() private {
+        playerA = address(0);
+        playerB = address(0);
+        revealedA = false;
+        revealedB = false;
+        valueA = false;
+        valueB = false;
+        commitmentA = bytes32(0);
+        commitmentB = bytes32(0);
+        lastCommitmentTime = 0;
+    }
+
+    function claimWinByTimeOut() public {
+        require(playerA != address(0) && playerB != address(0), "Both players must have played");
+        require(block.timestamp - lastCommitmentTime > REVEAL_PERIOD, "Reveal period not over");
+        require(!(revealedA && revealedB), "Game already finished");
+
+        // Case 1: No one revealed
+        if (!revealedA && !revealedB) {
+            // In this case, we give the funds back to both players
+            balances[playerA] += REWARD / 2;
+            balances[playerB] += REWARD / 2;
+        }
+        // Case 2: Only one player revealed.
+        // In this case, we give all the funds to the only one who revealed
+        else {
+            address winner;
+            if (revealedA) {
+                winner = playerA;
+            } else {
+                winner = playerB;
+            }
+            balances[winner] += REWARD;
+        }
+        cleanUp();
+    }
+
+
+    // This allows player A to get back their funds if no one played him yet
+    // This can be done instantly, not necessary to wait for the reveal period.
+    function forfeitIfNoOnePlayed() public {
+        require(msg.sender == playerA, "Only player A can forfeit");
+        require(playerB == address(0), "Player B has already played");
+        require(block.timestamp - playerAWaitTime > MINIMUM_OPPONENT_WAIT, "Forfeit not allowed yet");
+        balances[playerA] += REWARD / 2;
+        cleanUp();
+    }
 
 }
