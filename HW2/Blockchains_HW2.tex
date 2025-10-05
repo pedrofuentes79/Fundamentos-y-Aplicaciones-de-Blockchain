@@ -507,12 +507,15 @@ pay more gas than the other and why.
 \begin{solution} %Uncomment and type your solution here
   El costo de \href{https://sepolia.etherscan.io/tx/0x17fe5b5a1efd20dbfdb45436f2e9ebc09771e578830e30f4d8ad282e409a9e1a}{deploy} fue de 0.00279 ETH (desde Remix).
 
-  
-
-
+  Los costos de las transacciones fueron:
+  - $A$ hace commit: 92,133 gas 
+  - $B$ hace commit: 92,473 gas 
+  - $B$ hace reveal: 36,338 gas 
+  - $A$ hace reveal: 75,156 gas 
+  - $A$ hace withdraw: 35,738 gas 
 
   El contrato $\textbf{no es justo}$ para ambos jugadores. Esto es porque, entre otros desbalances, el último en revelar tiene que pagar por la ejecución de la función
-  $\texttt{deterimneWinner}$, y luego ejecuta $\texttt{cleanUp}$ para retornar al estado inicial.
+  $\texttt{deterimneWinner}$, y luego ejecuta $\texttt{cleanUp}$ para retornar al estado inicial. Esto se refleja en los costos de las transacciones dados.
 
   Para hacerlo mas eficiente, se podrían usar menos variables, los timestamps se podrían guardar en variables de tamaño más chico.
   Quizás para hacerlo más justo se podría hacer el cleanUp una vez que alguien quiera empezar un nuevo juego.
@@ -711,9 +714,15 @@ contract MatchingPennies {
 
 \part[5] The transaction history of an execution of a game on your contract.
 
-%\begin{solution} %Uncomment and type your solution here
-    
-%\end{solution}
+\begin{solution} %Uncomment and type your solution here
+    - Jugador $A$ hace commit: \href{link}{https://sepolia.etherscan.io/tx/0x1389d4e7496b2a47eefe4d1a1f3f9ae19323240f17465edf7ce603a77ccbebaf}
+    - Jugador $B$ hace commit: \href{link}{https://sepolia.etherscan.io/tx/0x660cddd2aabb12fe5d679b687caa65227b99b4b5eda9f4fedc742af40a4652ea}
+    - Jugador $B$ hace reveal: \href{link}{https://sepolia.etherscan.io/tx/0x06f5dc55924f04d033ccb4258754855af75550d6128c475f4cc7c993870a26ad}
+    - Jugador $A$ hace reveal: \href{link}{https://sepolia.etherscan.io/tx/0xc5f6d423d6a042c85a5bec9638c7f4d9114e1020bd527b43973f4c14700c88fd}
+    - Jugador $A$ hace withdraw: \href{link}{https://sepolia.etherscan.io/tx/0x09f1f95ec3edef7e1b57208f6060f4a747f45ab0ca4db598c7ea19eaa5de75f1}
+
+    $A$ ganó ya que había elegido $true$ y $B$ había elegido $true$. Luego, $A$ pudo retirar un total de 0.1 ether.
+\end{solution}
 
 \end{parts}
 
