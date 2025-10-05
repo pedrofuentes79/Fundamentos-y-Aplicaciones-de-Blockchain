@@ -508,12 +508,13 @@ pay more gas than the other and why.
   El costo de \href{https://sepolia.etherscan.io/tx/0x17fe5b5a1efd20dbfdb45436f2e9ebc09771e578830e30f4d8ad282e409a9e1a}{deploy} fue de 0.00279 ETH (desde Remix).
 
   Los costos de las transacciones fueron:
-  - $A$ hace commit: 92,133 gas 
-  - $B$ hace commit: 92,473 gas 
-  - $B$ hace reveal: 36,338 gas 
-  - $A$ hace reveal: 75,156 gas 
-  - $A$ hace withdraw: 35,738 gas 
-
+\begin{itemize}
+  \item $A$ hace commit: 92,133 gas 
+  \item $B$ hace commit: 92,473 gas 
+  \item $B$ hace reveal: 36,338 gas 
+  \item $A$ hace reveal: 75,156 gas 
+  \item $A$ hace withdraw: 35,738 gas 
+\end{itemize}
   El contrato $\textbf{no es justo}$ para ambos jugadores. Esto es porque, entre otros desbalances, el último en revelar tiene que pagar por la ejecución de la función
   $\texttt{deterimneWinner}$, y luego ejecuta $\texttt{cleanUp}$ para retornar al estado inicial. Esto se refleja en los costos de las transacciones dados.
 
