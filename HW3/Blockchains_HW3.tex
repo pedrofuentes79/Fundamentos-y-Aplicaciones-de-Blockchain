@@ -1,0 +1,290 @@
+\documentclass[12pt,addpoints,answers]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage{microtype}
+\usepackage{xspace}
+\usepackage[svgnames]{xcolor}
+\usepackage[sc]{mathpazo}
+\usepackage{enumitem}
+\usepackage{bm}
+
+\pagestyle{head}
+
+% TIRET DEFINITIONS
+
+\newlength{\saveparindent}
+\setlength{\saveparindent}{\parindent}
+\newlength{\saveparskip}
+\setlength{\saveparskip}{\parskip}
+\newcounter{ctr}
+\newcounter{savectr}
+\newcounter{ectr}
+\newcounter{sctr}
+
+
+\newenvironment{tiret}{%
+\begin{list}{\hspace{2pt}\rule[0.5ex]{6pt}{1pt}\hfill}{\labelwidth=15pt%
+\labelsep=5pt \leftmargin=20pt \topsep=3pt%
+\setlength{\listparindent}{\saveparindent}%
+\setlength{\parsep}{\saveparskip}%
+\setlength{\itemsep}{0pt} }}{\end{list}}
+
+%----------Header--------------------%
+\def\course{{\sc Fundamentos y Aplicaciones de Blockchains}}
+\def\term{Depto. de Computaci\'{o}n, UBA, 2do. Cuatrimestre 2025}
+\def\prof{Lecturer: Juan Garay}
+\newcommand{\handout}[5]{
+   \renewcommand{\thepage}{\arabic{page}}
+   \begin{center}
+   \framebox{
+      \vbox{
+    \hbox to 5.78in { \hfill \large{\course} \hfill }
+    \vspace{2mm}
+%    \hbox to 5.78in { \hfill \large{\prof} \hfill }
+%       \vspace{2mm}
+       \hbox to 5.78in { {\Large \hfill \textbf{#5}  \hfill} }
+       \vspace{2mm}
+       \hbox to 5.78in { \term \hfill \emph{#2}}
+       \hbox to 5.78in { {#3 \hfill \emph{#4}}}
+      }
+   }
+   \end{center}
+   \vspace*{4mm}
+}
+\newcommand{\hw}[4]{\handout{#1}{#2}{#3}{#4}{Homework #1}}
+
+% -- For ignoring stuff -- %
+\newcommand{\ignore}[1]{}
+
+\begin{document}
+
+%----Specs: change accordingly-----%
+\newif\ifstudent % comment out false
+\studenttrue 
+% \studentfalse
+
+\def\hwnum{2}
+\def\issuedate{9/10/25}
+\def\duedate{21/10/25, 15:00 hs} % 
+\def\yourname{} % put your name here
+%------------------------------%
+
+\ifstudent
+\hw{\hwnum}{\issuedate}{Student: \yourname}{Due: \duedate}%
+\else
+\hw{\hwnum}{\issuedate}{\prof}{Due: \duedate}%
+\fi
+
+% \ignore{
+
+\noindent \textbf{Instructions}
+
+\begin{itemize}
+    \item Upload your solution to Campus; make sure it's only one file, and clearly write your name on the first page. Name the file \textsf{`$<$your last name$>$\_HW3.pdf.'} 
+    %{\bf Important:} Make sure to tap {\bf Turn in} after you upload your solution.   
+      
+     If you are proficient with \LaTeX, you may also typeset your submission and submit in PDF format. To do so, uncomment the ``\%\textbackslash begin\{solution\}'' and ``\%\textbackslash end\{solution\}'' lines and write your solution between those two command lines.
+    
+      \item Your solutions will be graded on \emph{correctness} and
+    \emph{clarity}. You should only submit work that you believe to be
+    correct.
+    % , and you will get significantly more partial credit if you     clearly identify the gap(s) in your solution.
+    
+    \item You may collaborate with others on this problem set.  However,
+    you must \textbf{{write up your own solutions}} and \textbf{{list
+      your collaborators and any external sources (including ChatGPT and similar generative AI chatbots)}} for each
+    problem. Be ready to explain your solutions orally to a member of the course staff
+    if asked.
+    
+    \ignore{
+    \item For problems that require you to provide an algorithm, you must
+    give a precise description of the algorithm, together with a proof
+    of correctness and an analysis of its running time. You may use
+    algorithms from class as subroutines. You may also use any facts
+    that we proved in class or from the book.
+    } %IGNORE
+    
+\end{itemize}
+
+\noindent This homework contains \numquestions\ questions,
+% \numpages\ pages
+for a total of \numpoints \ points.
+% and \numbonuspoints\ bonus points.
+
+%\medskip
+\newpage
+
+%} %IGNORE
+
+\begin{questions}
+
+
+\question \textbf{Bitcoin transactions:}
+         \begin{parts}
+                   \part[7] Describe the mechanism used in the actual Bitcoin application that  the miners follow in order to insert transactions into a block. Would the Consistency (aka Persistence) and Liveness properties we saw in class, as well as the $V,I,R$ functions have to be modified to capture the actual mechanism? Elaborate.
+                   
+     %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+    
+            \part[3] Describe the purpose of a {\em coinbase} transaction. 
+            
+     \begin{solution} %Uncomment and type your solution here
+        Las transacciones de tipo coinbase sirven para recompensar a los mineros por haber minado el bloque con éxito; quien mina el bloque tiene el derecho de agregar esta transacción a la blockchain, 
+        en la que recibe esta recompensa.
+
+        Esta transacción es distinta porque no tiene origen, y no son los mismos fondos que las comisiones que puedan cobrar los mineros. Esta es una recompensa que recibe por haber minado el bloque.
+        Además, cumple el propósito de crear nuevas monedas para que circulen en la red.
+        
+    \end{solution}
+
+            \end{parts}
+
+
+\newpage
+
+\question \textbf{Proofs of work:}
+
+\begin{parts}
+
+\part[5] Describe the purpose and implementation of the {\bf 2x1 PoW} technique.
+
+     %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\part[7] Let $T_1$ and $T_2$ be the target values in 2x1 PoW, and $\kappa$ the size of the hash function's output. What relation should they satisfy for the technique to work? Elaborate.
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+    
+  \part[8] Design and argue correctness of an $\ell$x1 PoW scheme. Note that such a scheme would enable an $\ell$-parallel blockchain. What properties of the blockchain or ledger application would, if any,  benefit from a parallel blockchain? Elaborate.
+  
+   %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+    
+    \end{parts}
+    
+\newpage
+
+\question \textbf{Strong consensus:} We saw how the Bitcoin backbone protocol can be used to solve the {\em consensus} problem (aka {\em Byzantine agreement}). In the {\em strong consensus} problem, the {\em Validity} condition is strengthened to require that the output value be one of the honest parties' inputs---this property is called {\em Strong Validity}. (Note that this distinction is relevant only in the case of non-binary inputs.)
+
+\begin{parts}
+
+\part[5] What should be the assumption on the adversarial computational power (similar to the ``Honest Majority Assumption'') for Strong Validity to hold?
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\part[5]  State and prove the Strong Validity lemma.
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\end{parts}
+
+\newpage
+
+\question \textbf{Smart contract programming:}  In this assignment you will create your {\bf own custom token}. Your contract should implement the public API described below:
+
+\begin{itemize}
+\item \underline{\textbf{owner:}} a public payable address that defines the contract’s ``owner,'' that is, the user that deploys the contract
+\item \textbf{\textit{Transfer(address indexed from, address indexed to, uint256 value):}} an event that contains two addresses and a uint256
+\item \textbf{\textit{Mint(address indexed to, uint256 value):}} an event that contains an address and a uint256
+\item \textbf{\textit{Sell(address indexed from, uint256 value):}} an event that contains an address and a uint256
+
+\item \textbf{totalSupply():} a view function that returns a uint256 of the total amount of minted tokens
+\item \textbf{balanceOf(address\_account):} a view function returns a uint256 of the amount of tokens
+an address owns
+\item \textbf{getName():} a view function that returns a string with the token’s name
+\item \textbf{getSymbol():} a view function that returns a string with the token’s symbol
+\item \textbf{getPrice():} a view function that returns a uint128 with the token’s price (at which users can
+redeem their tokens)
+
+\item \textbf{transfer(address to, uint256 value):} a function that transfers \emph{value} amount of tokens
+between the caller’s address and the address to; if the transfer completes successfully, the
+function emits an event \emph{Transfer} with the sender’s and receiver’s addresses and the amount
+of transferred tokens and returns a boolean value (\emph{true})
+\item \textbf{mint(address to, uint256 value):} a function that enables \emph{only the owner} to create value new tokens and give them to address to; if the operation completes successfully, the
+function emits an event \emph{Mint} with the receiver’s address and the amount of minted tokens
+and returns a boolean value (\emph{true})
+\item \textbf{sell(uint256 value):} a function that enables a user to sell tokens for wei at a price of \emph{600 wei per token}; if the operation completes successfully, the sold tokens are removed from
+the circulating supply, and the function emits an event \emph{Sell} with the seller’s address and the
+amount of sold tokens and returns a boolean value (\emph{true})
+\item \textbf{close():} a function that enables \emph{only the owner} to destroy the contract; the contract’s
+balance in wei, at the moment of destruction, should be transferred to the owner's address
+\item \textbf{fallback} functions that enable anyone to send Ether to the contract’s account
+\item \textbf{constructor} function that initializes the contract as needed
+
+\end{itemize}
+      
+You should implement the smart contract and deploy it on the course's Sepolia Testnet. Your contract should be as secure and gas efficient as possible. After deploying your contract, you should buy, transfer, and sell a token in the contract. 
+
+Your contract should implement the above API \textbf{exactly as specified}. \emph{Do not} omit implementing one of the above variables/functions/events, do not change their name or parameters, and do not add other public variables/functions. You can define other private/internal functions/variables, if necessary.
+
+You should provide:
+
+\begin{parts}
+
+\part[5] A detailed description of your high-level design decisions, including (but not limited to):
+\begin{tiret}
+\item  What internal variables did you use?
+\item What is the process of buying/selling tokens and changing the price?
+\item How can users access their token balance?
+\item How did you link the library to your contract?
+\end{tiret}
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\part[5] A detailed gas evaluation of your implementation, including:
+\begin{tiret}
+\item The cost of deploying and interacting with your contract.
+\item Techniques to make your contract more cost effective.
+\item What was the gas impact of using the deployed library instance, compared to
+including its code in your contract?
+\end{tiret}
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\part[5] A thorough listing of potential hazards and vulnerabilities that can occur in the smart
+contract and a detailed analysis of the security mechanisms that can mitigate these
+hazards.
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\part[5] The transaction history of the deployment of and interaction with your contract.
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\part[5] The code of your contract.
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\end{parts}
+
+\newpage
+
+
+~\\
+
+\end{questions}
+
+\end{document}
