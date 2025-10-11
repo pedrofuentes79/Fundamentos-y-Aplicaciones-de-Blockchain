@@ -323,7 +323,10 @@ hazards.
         Los principales problemas de seguridad están relacionados con los privilegios que tiene el propietario del contrato. Para empezar, el dueño del contrato puede retirar todo el ether del contrato, lo que haría que los usuarios no puedan vender sus tokens. Además, el dueño puede manipular arbitrariamente el precio de los tokens. 
         
         Por estas razones el contrato no es del todo justo para los usuarios, que corren el riesgo de perder su ether si el contrato se cierra.
-        
+
+        Para mitigar estos problemas, se podría hacer que el dueño del contrato no pueda retirar el ether de otros usuarios, solo de su propia cuenta.
+        También que no pueda cambiar el precio de los tokens arbitrariamente. Hay varias soluciones a esto, una es que el dueño del contrato pueda cambiar el precio, pero que haya un delay entre que lo propone y que se hace efectivo. Si no, podria pasar que el dueño del contrato vea que alguien esta por vender tokens, y le baje el precio para que, al vender, el usuario reciba menos ether. También se podría hacer que los usuarios que quieren comprar/vender sus tokens pongan un precio mínimo/máximo que aceptan (en esa transacción).
+
     \end{solution}
 
 \part[5] The transaction history of the deployment of and interaction with your contract.
