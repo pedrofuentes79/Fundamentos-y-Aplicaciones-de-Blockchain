@@ -127,9 +127,40 @@ for a total of \numpoints \ points.
          \begin{parts}
                    \part[7] Describe the mechanism used in the actual Bitcoin application that  the miners follow in order to insert transactions into a block. Would the Consistency (aka Persistence) and Liveness properties we saw in class, as well as the $V,I,R$ functions have to be modified to capture the actual mechanism? Elaborate.
                    
-     %\begin{solution} %Uncomment and type your solution here
+     \begin{solution} %Uncomment and type your solution here
+
+        Función $V$: el objetivo es validar un bloque. En el paper no se especifican algunos detalles que puede ser útil mostrar para especificar qué es un bloque válido en la red de Bitcoin (tomo la función $V$ de la clase, la de "Public transaction ledger protocol").
+        Para que un bloque sea válido en la red de bitcoin, debe cumplir las siguientes propiedades. 
+        \begin{itemize}
+            \item La suma total de lo que se envía en la transacción coinbase debe ser la correcta dada la recompensa actual de la red. Además, la transacción coinbase debe ser la primera del bloque.
+            \item Las demás transacciones del bloque deben ser válidas. Es decir, para cada transacción:
+            \begin{itemize}
+                \item La firma digital es correcta respecto a quien envía la transacción.
+                \item No hay double spends: la suma total de lo que se envía en esa transacción es menor o igual a los fondos de las cuentas a debitar.
+                \item Si la cuenta a debitar viene de un UTXO de una coinbase transaction, entonces ese UTXO debe haber sido creado con 100 bloques de antelación. (\href{https://developer.bitcoin.org/devguide/block_chain.html#transaction-data}{referencia})
+            \end{itemize}
+            \item El PoW es correcto: se cumple que el hash del bloque con ese nonce es menor al target.
+            \item El hash del bloque anterior es correcto.
+        \end{itemize}
+
+        Función $R$: El objetivo es leer una cadena de bloques. No hacen falta modificaciones. Al leer una cadena de bloques, solamente se verifica que sea válida.
         
-    %\end{solution}
+        Función $I$: El objetivo es, dado un input tape, seleccionar las transacciones que se van a incluir en el nuevo. El criterio de selección es que sean válidas respecto al ledger ($\bf{x}_{\mathcal{C}}$) (y que no estén en este ledger).
+        Las modificaciones que tendríamos que hacer para reflejar el protocolo de bitcoin son:
+        \begin{itemize}
+            \item El "input tape" se llama \textit{mempool}. Ahí se guardan las transacciones que los mineros escuchan de la red. Cada minero tiene la suya, y entre las \textit{mempools} de los mineros puede haber ligeras diferencias.
+            \item El criterio de selección (además de los que se detallan arriba, que son necesarios para mantener la validez del ledger) se basa en incentivos económicos: los mineros van a elegir las transacciones que mejores comisiones tengan (\textit{transaction fees}).
+            \item La "transacción neutra" que se agrega al principio de la subcadena mencionada en la definición del paper se reemplaza por la transacción coinbase, la que usan los mineros para recibir la recompensa por haber minado el bloque.
+        \end{itemize}
+
+        Propiedad de $\textit{Consistency}$: Esta propiedad muestra que, una vez que un minero (honesto) reporta una transacción $tx_0$ lo suficientemente lejos del final de la cadena (es decir, ya hubo una cantidad $k$ de bloques posteriores al bloque que tiene esta transacción $tx_0$), esa transacción va a ser reportada como estable por todos los mineros, en exactamente la misma posición. Esta es la razón por la cual las transacciones se consideran irreversibles en la red de bitcoin.
+        Esta propiedad no necesita de modificaciones para reflejar el protocolo de bitcoin. Podemos agregar que en bitcoin se llaman "confirmaciones" a la cantidad de bloques que tiene esa transacción por delante. En particular, una vez que $k=6$, la transacción se considera irreversible.
+
+        Propiedad de $\textit{Liveness}$: En el paper, esta propiedad muestra que, dada una transacción válida, si los mineros la reciben continuamente (durante $u$ rondas), eventualmente la van a reportar como estable (a más de $k$ bloques del final de la cadena).
+        Para adaptarla al protocolo de bitcoin, es importante agregarle que la transacción, además de ser válida, tiene que tener un precio competitivo de $\textit{transaction fees}$. Esto se debe a que los mineros siempre van a elegir las transaccion con mejor comisión. Si la transacción está muy por debajo del promedio de transacción aceptada por los mineros, no la van a incluir en el bloque, dado que un bloque tiene un tamaño limitado. 
+        Por ende, no se cumpliría liveness si no se agrega esta restricción.
+
+    \end{solution}
     
             \part[3] Describe the purpose of a {\em coinbase} transaction. 
             
@@ -141,6 +172,9 @@ for a total of \numpoints \ points.
         Además, cumple el propósito de crear nuevas monedas para que circulen en la red.
         
     \end{solution}
+
+
+    Nota: para escribir la solución del ejercicio 1, tomé en cuenta las diapositivas de la clase, el paper de "Bitcoin backbone" y bitcoin.org.
 
             \end{parts}
 
