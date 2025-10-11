@@ -4,7 +4,7 @@
 // overflow/underflow for me :D. It reverts the operation if it overflows/underflows.
 pragma solidity ^0.8.0;
 
-contract HW3 {
+contract Token12 {
     address public owner;
     mapping(address => uint256) public balances;
     uint256 public _totalSupply;
@@ -19,11 +19,11 @@ contract HW3 {
     }
 
     function getName() public pure returns (string memory) {
-        return "12Token";
+        return "Token12";
     }
 
     function getSymbol() public pure returns (string memory) {
-        return "12T";
+        return "T12";
     }
 
     function getPrice() public pure returns (uint128) {
@@ -97,6 +97,14 @@ contract HW3 {
 
     }
 
+
+    fallback() external payable {
+        // fallback function to receive ether
+    }
+    
+    receive() external payable {
+        // receive function to receive ether
+    }
 
 
 
