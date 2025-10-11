@@ -276,9 +276,20 @@ You should provide:
 \item How did you link the library to your contract?
 \end{tiret}
 
-    %\begin{solution} %Uncomment and type your solution here
-        
-    %\end{solution}
+    \begin{solution} %Uncomment and type your solution here
+        Variables internas: $\texttt{owner}$, $\texttt{tokenBalance}$, $\texttt{\_totalSupply}$, $\texttt{price}$ y finalmente $\texttt{etherBalance}$. 
+        Si el precio no necesitaba ser modificado, podría haberlo dejado como una constante, pudiendo obtenerlo mediante la función $\texttt{getPrice}$. Sin embargo, como la especificación mencionaba "cómo cambiar el precio", agregué la función $\texttt{changePrice}$, que solo puede ser llamada por el propietario del contrato.
+        El mapping $\texttt{tokenBalance}$ guarda para cada dirección el saldo de la cuenta.
+        El mapping $\texttt{etherBalance}$ guarda para cada dirección el monto de ether recibido por la misma. Esto permite a los usuarios enviar ether al contrato, y luego usarlo para comprar tokens. Al ser en dos pasos, los usuarios podrian tener un balance de ether y hacer varias transacciones para comprar tokens (por ejemplo, si quisieran especular con el precio, y hacer compras y ventas en diferentes momentos para ganar con la diferencia de precio).
+        Luego, para retirar su ether, usan la función $\texttt{withdraw}$.
+
+        Para comprar tokens, los usuarios usan la función $\texttt{buy}$. Esta función no estaba especificada en la API, pero la agregué por simplicidad. Esto permite a los usuarios comprar tokens con el ether que ya habían enviado al contrato, que se guarda en $\texttt{etherBalance}$. Luego, el usuario le compra los tokens al contrato directamente. Esto es una decisión de diseño. Consideré que era más simple que le compren al contrato (asumiendo que el contrato tiene tokens en su balance, generados por el propietario previamente). 
+
+        Para vender tokens, los usuarios llaman a $\texttt{sell}$. Esto genera un evento $\texttt{Sell}$ con la dirección del vendedor y la cantidad de tokens vendidos. Luego, los usuarios pueden retirar su ether mediante la función $\texttt{withdraw}$. El hecho de que hayamos definido que los usuarios pueden guardar su ether en nuestro contrato permite que el withdraw no se haga en el momento de la llamada a $\texttt{sell}$, sino que se pueda hacer después. Esto nos da más seguridad en caso de que se revierta la ejecución.
+
+        Los usuarios acceden a su balance de tokens mediante la función $\texttt{balanceOf}$. Además, acceden a su balance de ether mediante la función $\texttt{etherBalanceOf}$.
+
+    \end{solution}
 
 \part[5] A detailed gas evaluation of your implementation, including:
 \begin{tiret}
@@ -288,9 +299,21 @@ You should provide:
 including its code in your contract?
 \end{tiret}
 
-    %\begin{solution} %Uncomment and type your solution here
+    \begin{solution} %Uncomment and type your solution here
+        Gas de las interacciones:
+        \begin{itemize}
+            \item Deploy: 
+            \item buy:
+            \item sell:
+            \item withdraw:
+        \end{itemize}
+
+
         
-    %\end{solution}
+        Para hacer que el contrato gaste menos gas, se podrían hacer ciertos recortes. Por ejemplo, en vez de permitir que se guarde el balance de ether, en otro arreglo, podríamos hacer que los usuarios envíen el ether directamente en la llamada a $\texttt{buy}$, y que al vender se les trasfiera el ether resultante directamente a su dirección. El costo de gas sería menor ya que tendría menos escrituras y lecturas de memoria, aunque el contrato se vuelve menos seguro.
+
+        
+    \end{solution}
 
 \part[5] A thorough listing of potential hazards and vulnerabilities that can occur in the smart
 contract and a detailed analysis of the security mechanisms that can mitigate these

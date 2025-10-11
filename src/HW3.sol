@@ -6,16 +6,21 @@ pragma solidity ^0.8.0;
 
 contract Token12 {
     address public owner;
-    mapping(address => uint256) public balances;
+    mapping(address => uint256) public tokenBalance;
+    mapping(address => uint256) public etherBalance;
     uint256 public _totalSupply;
+    uint128 public price;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Mint(address indexed to, uint256 value);
     event Sell(address indexed from, uint256 value);
 
+    // podria agregar eventos Withdraw, Buy
+
     constructor() {
         owner = msg.sender;
         _totalSupply = 0;
+        price = 600 wei;
     }
 
     function getName() public pure returns (string memory) {
@@ -27,8 +32,13 @@ contract Token12 {
     }
 
     function getPrice() public pure returns (uint128) {
-        // Dinamico? o lo fijo yo y listo?
-        return 600 wei;
+        return price;
+    }
+
+    function changePrice(uint128 newPrice) public {
+        require(msg.sender == owner);
+        require(newPrice > 0);
+        price = newPrice;
     }
 
     function totalSupply() public view returns (uint256) {
@@ -36,16 +46,20 @@ contract Token12 {
     }
 
     function balanceOf(address account) public view returns (uint256) {
-        return balances[account];
+        return tokenBalance[account];
+    }
+
+    function etherBalanceOf(address account) public view returns (uint256) {
+        return etherBalance[account];
     }
 
     function transfer(address to, uint256 value) public payable returns (bool) {
-        require(balances[msg.sender] >= value);
+        require(tokenBalance[msg.sender] >= value);
         require(value > 0);
         require(to != address(0));
         
-        balances[msg.sender] -= value;
-        balances[to] += value;
+        tokenBalance[msg.sender] -= value;
+        tokenBalance[to] += value;
 
         emit Transfer(msg.sender, to, value);
 
@@ -60,11 +74,32 @@ contract Token12 {
         emit Mint(to, value);
 
         // update my state
-        balances[to] += value;
+        tokenBalance[to] += value;
         _totalSupply += value;
 
 
         return true;
+    }
+
+    function buy(uint256 value) public returns (bool) {
+        require(value > 0);
+        // sender must have paid enouth ether to buy the tokens
+        uint256 totalEther = value * price;
+        require(totalEther <= etherBalance[msg.sender]);
+        // the contract itself must have enough tokens to sell to the sender
+        require(tokenBalance[address(this)] >= value);
+
+        etherBalance[msg.sender] -= totalEther;
+
+        // This is not creating new tokens, it's just transferring tokens from the contract itself to the sender
+        // However, the contract must have enough tokens to transfer to the sender, which means the contract owner
+        // must have minted enough tokens for the contract beforehand.
+
+        // this buys from the contract itself, so we use transfer()
+        transfer(msg.sender, value);
+
+        return true;
+
     }
 
     function sell(uint256 value) public returns (bool) {
@@ -72,38 +107,48 @@ contract Token12 {
         // In order to sell, I need to have enough tokens in the contract. This is to avoid users calling sell() when I (owner) have closed the contract. 
         // However, they can still call transfer() to transfer tokens to other addresses, though they won't be able to sell them.
         require(_totalSupply >= value);
-        require(balances[msg.sender] >= value);
+        require(tokenBalance[msg.sender] >= value);
 
         // overflow is handled by ^0.8.0
-        uint256 toTransfer = value * getPrice();
-        // attempt to transfer first. In case of failure here, we don't modify the state.
-        transfer(msg.sender, toTransfer);
+        etherBalance[msg.sender] += value * price;
 
         emit Sell(msg.sender, value);
 
         // update my state
-        balances[msg.sender] -= value;
+        tokenBalance[msg.sender] -= value;
         _totalSupply -= value;
 
         return true;
     }
+
+    function withdraw(uint256 value) public returns (bool) {
+        require(value > 0);
+        require(etherBalance[msg.sender] >= value);
+        etherBalance[msg.sender] -= value;
+        payable(msg.sender).transfer(value);
+        return true;
+    }
+
+
 
     function close() public {
         require(msg.sender == owner);
         payable(owner).transfer(address(this).balance);
         _totalSupply = 0;
 
-        // I don't reset balances here, just to keep track of the holders (in the case that I'd fund this contract again? so that the holders can still use their tokens)
+        // I don't reset tokenBalance here, just to keep track of the holders (in the case that I'd fund this contract again? so that the holders can still use their tokens)
 
     }
 
 
     fallback() external payable {
-        // fallback function to receive ether
+        // save the amount of ether received by the sender
+        etherBalance[msg.sender] += msg.value;
     }
     
     receive() external payable {
-        // receive function to receive ether
+        // save the amount of ether received by the sender
+        etherBalance[msg.sender] += msg.value;
     }
 
 
