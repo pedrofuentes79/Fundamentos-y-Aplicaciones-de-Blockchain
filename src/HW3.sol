@@ -31,7 +31,7 @@ contract Token12 {
         return "T12";
     }
 
-    function getPrice() public pure returns (uint128) {
+    function getPrice() public view returns (uint128) {
         return price;
     }
 
@@ -53,7 +53,7 @@ contract Token12 {
         return etherBalance[account];
     }
 
-    function transfer(address to, uint256 value) public payable returns (bool) {
+    function transfer(address to, uint256 value) public returns (bool) {
         require(tokenBalance[msg.sender] >= value);
         require(value > 0);
         require(to != address(0));
@@ -82,6 +82,10 @@ contract Token12 {
     }
 
     function buy(uint256 value) public returns (bool) {
+        // This is not creating new tokens, it's just transferring tokens from the contract itself to the sender
+        // However, the contract must have enough tokens to transfer to the sender, which means the contract owner
+        // must have minted enough tokens for the contract beforehand.
+
         require(value > 0);
         // sender must have paid enouth ether to buy the tokens
         uint256 totalEther = value * price;
@@ -89,14 +93,10 @@ contract Token12 {
         // the contract itself must have enough tokens to sell to the sender
         require(tokenBalance[address(this)] >= value);
 
-        etherBalance[msg.sender] -= totalEther;
-
-        // This is not creating new tokens, it's just transferring tokens from the contract itself to the sender
-        // However, the contract must have enough tokens to transfer to the sender, which means the contract owner
-        // must have minted enough tokens for the contract beforehand.
-
         // this buys from the contract itself, so we use transfer()
         transfer(msg.sender, value);
+
+        etherBalance[msg.sender] -= totalEther;
 
         return true;
 
@@ -104,13 +104,19 @@ contract Token12 {
 
     function sell(uint256 value) public returns (bool) {
         require(value > 0);
-        // In order to sell, I need to have enough tokens in the contract. This is to avoid users calling sell() when I (owner) have closed the contract. 
-        // However, they can still call transfer() to transfer tokens to other addresses, though they won't be able to sell them.
-        require(_totalSupply >= value);
+
+        // In order to sell, I need to have enough tokens in the contract.
+        uint256 totalEther = value * price;
+        require(address(this).balance >= totalEther, "Ether currently unavailable in the contract. Contact the owner to fund the contract.");
+
+        // This is to avoid users calling sell() when I (owner) have closed the contract.
+        // However, they can still call transfer() to transfer tokens to other addresses, 
+        // though they won't be able to sell them.
+        require(_totalSupply >= value, "Not enough tokens in the contract. Contact the owner to mint more tokens."); 
         require(tokenBalance[msg.sender] >= value);
 
         // overflow is handled by ^0.8.0
-        etherBalance[msg.sender] += value * price;
+        etherBalance[msg.sender] += totalEther;
 
         emit Sell(msg.sender, value);
 
@@ -124,8 +130,11 @@ contract Token12 {
     function withdraw(uint256 value) public returns (bool) {
         require(value > 0);
         require(etherBalance[msg.sender] >= value);
-        etherBalance[msg.sender] -= value;
         payable(msg.sender).transfer(value);
+        
+        // update state after external call
+        etherBalance[msg.sender] -= value;
+
         return true;
     }
 
