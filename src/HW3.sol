@@ -15,7 +15,7 @@ contract Token12 {
     event Mint(address indexed to, uint256 value);
     event Sell(address indexed from, uint256 value);
 
-    // podria agregar eventos Withdraw, Buy
+    // podria agregar eventos Withdraw, Buy, PriceChanged
 
     constructor() {
         owner = msg.sender;
@@ -53,16 +53,21 @@ contract Token12 {
         return etherBalance[account];
     }
 
-    function transfer(address to, uint256 value) public returns (bool) {
-        require(tokenBalance[msg.sender] >= value);
+    // This is to avoid code duplication on `transfer` and `buy`
+    function _transfer(address from, address to, uint256 value) internal {
+        require(tokenBalance[from] >= value);
         require(value > 0);
         require(to != address(0));
+        require(to != from);
         
-        tokenBalance[msg.sender] -= value;
+        tokenBalance[from] -= value;
         tokenBalance[to] += value;
 
-        emit Transfer(msg.sender, to, value);
+        emit Transfer(from, to, value);
+    }
 
+    function transfer(address to, uint256 value) public returns (bool) {
+        _transfer(msg.sender, to, value);
         return true;
     }
 
@@ -93,10 +98,10 @@ contract Token12 {
         // the contract itself must have enough tokens to sell to the sender
         require(tokenBalance[address(this)] >= value);
 
-        // this buys from the contract itself, so we use transfer()
-        transfer(msg.sender, value);
-
         etherBalance[msg.sender] -= totalEther;
+        
+        // this buys from the contract itself, so we use _transfer()
+        _transfer(address(this), msg.sender, value);
 
         return true;
 
@@ -130,11 +135,12 @@ contract Token12 {
     function withdraw(uint256 value) public returns (bool) {
         require(value > 0);
         require(etherBalance[msg.sender] >= value);
-        payable(msg.sender).transfer(value);
-        
+
         // update state after external call
         etherBalance[msg.sender] -= value;
 
+        payable(msg.sender).transfer(value);
+        
         return true;
     }
 

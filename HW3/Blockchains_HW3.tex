@@ -319,9 +319,12 @@ including its code in your contract?
 contract and a detailed analysis of the security mechanisms that can mitigate these
 hazards.
 
-    %\begin{solution} %Uncomment and type your solution here
+    \begin{solution} %Uncomment and type your solution here
+        Los principales problemas de seguridad están relacionados con los privilegios que tiene el propietario del contrato. Para empezar, el dueño del contrato puede retirar todo el ether del contrato, lo que haría que los usuarios no puedan vender sus tokens. Además, el dueño puede manipular arbitrariamente el precio de los tokens. 
         
-    %\end{solution}
+        Por estas razones el contrato no es del todo justo para los usuarios, que corren el riesgo de perder su ether si el contrato se cierra.
+        
+    \end{solution}
 
 \part[5] The transaction history of the deployment of and interaction with your contract.
 
