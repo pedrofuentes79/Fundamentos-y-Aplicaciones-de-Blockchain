@@ -14,6 +14,7 @@ contract Token12 {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Mint(address indexed to, uint256 value);
     event Sell(address indexed from, uint256 value);
+    event Buy(address indexed from, uint256 value);
 
     // podria agregar eventos Withdraw, Buy, PriceChanged
 
@@ -102,6 +103,8 @@ contract Token12 {
         
         // this buys from the contract itself, so we use _transfer()
         _transfer(address(this), msg.sender, value);
+
+        emit Buy(msg.sender, value);
 
         return true;
 
