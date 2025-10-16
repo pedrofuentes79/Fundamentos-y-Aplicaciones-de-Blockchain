@@ -139,7 +139,7 @@ contract Token12 {
         require(value > 0);
         require(etherBalance[msg.sender] >= value);
 
-        // update state after external call
+        // update state before external call
         etherBalance[msg.sender] -= value;
 
         payable(msg.sender).transfer(value);

@@ -188,11 +188,11 @@ for a total of \numpoints \ points.
 \part[5] Describe the purpose and implementation of the {\bf 2x1 PoW} technique.
 
     \begin{solution} %Uncomment and type your solution here
-    El propósito de usar la técnica 2x1 PoW es lograr que en el $\textit{1\/2 Consensus Protocol}$, que requiere que se ejecuten dos PoWs diferentes, se puedan ejecutar de a una sola vez. Esto es para prevenir que un adversario pueda ejecutar solo uno de los PoW en paralelo, pudiendo pasar su $\textit{hashing power}$ de uno al otro.
+    El propósito de usar la técnica 2x1 PoW es lograr que en el $\textit{1$\slash$2 Consensus Protocol}$, que requiere que se ejecuten dos PoWs diferentes, se puedan ejecutar de a una sola vez. Esto es para prevenir que un adversario pueda ejecutar solo uno de los PoW en paralelo, pudiendo pasar su $\textit{hashing power}$ de uno al otro.
     
     Esto se debe a que si no se hiciera así, se tendrían que ejecutar dos loops distintos, sumando un total de $2q$ consultas. De este modo, se combinan ambas tareas en una sola, resultando en $q$ consultas.
 
-    La implementación se basa en ejecutar solo un hash en vez de dos. En el $\textit{1\/2 Consensus Protocol}$ se usaban dos funciones hash, $H_0$ y $H_1$. En la función $\texttt{double\_pow}$ se usa solo una función de hash, haciendo que se tome primero un valor como el output de la función de hash "tradicional" y el otro va a ser el reverso de ese hash. 
+    La implementación se basa en ejecutar solo un hash en vez de dos. En el $\textit{1$\slash$2 Consensus Protocol}$ se usaban dos funciones hash, $H_0$ y $H_1$. En la función $\texttt{double\_pow}$ se usa solo una función de hash, haciendo que se tome primero un valor como el output de la función de hash "tradicional" y el otro va a ser el reverso de ese hash. 
 
     Se agrega una etiqueta a las tuplas existentes, para diferenciar cuál PoW es cuál.
 
@@ -235,7 +235,7 @@ for a total of \numpoints \ points.
 
     Una de las propiedades que podría verse afectada es chain growth. Como los mineros trabajan en $\ell$ blockchains a la vez, cada una de ellas se vería  afectada. La red en su conjunto seguiría produciendo bloques a más o menos la misma velocidad. Pero, ahora esos bloques se van a distribuir en cada una de las $\ell$ cadenas. 
 
-    Vemos que liveness se ve afectada. Depende de $\textit{Chain Growth}$ y $\textit{Chain Quality}$. Vemos que la cantidad de rondas $u$ que se necesitan para que todos los mineros honestos incluyan esa transacción en el bloque (con profundidad $k$) va a tener que ser $\ell$ veces mayor, puesto que se distribuye el $\textit{hashing power}$ en $\ell$ cadenas.
+    Vemos que liveness se ve afectada. Depende de $\textit{Chain Growth}$ y $\textit{Chain Quality}$. La cantidad de rondas $u$ que se necesitan para que todos los mineros honestos incluyan esa transacción en el bloque (con profundidad $k$) va a tener que ser $\ell$ veces mayor, puesto que se distribuye el $\textit{hashing power}$ en $\ell$ cadenas.
 
 
         
@@ -323,13 +323,17 @@ You should provide:
 \end{tiret}
 
     \begin{solution} %Uncomment and type your solution here
+        Decidí extender levemente la funcionalidad del contrato para que tenga más usabilidad. En particular, agregué la función $\texttt{buy}$, que permite a los usuarios compraar tokens con el ether que ya habían depositado en el contrato. Estos tokens se los compran directamente a la cuenta del contrato, y luego se transfieren al usuario. Esto evita que el usuario tenga que enviar ether al contrato y luego hablar con el propietario para que le mintee los tokens.
+
+        Además, decidí agregar una función changePrice que permite cambiar el precio de los tokens y una función $\texttt{etherBalanceOf}$ que permite a los usuarios ver su balance de ether (además de $\texttt{balanceOf}$ para su balance de tokens).
+
         Variables internas: $\texttt{owner}$, $\texttt{tokenBalance}$, $\texttt{\_totalSupply}$, $\texttt{price}$ y finalmente $\texttt{etherBalance}$. 
         Si el precio no necesitaba ser modificado, podría haberlo dejado como una constante, pudiendo obtenerlo mediante la función $\texttt{getPrice}$. Sin embargo, como la especificación mencionaba "cómo cambiar el precio", agregué la función $\texttt{changePrice}$, que solo puede ser llamada por el propietario del contrato.
         El mapping $\texttt{tokenBalance}$ guarda para cada dirección el saldo de la cuenta.
         El mapping $\texttt{etherBalance}$ guarda para cada dirección el monto de ether recibido por la misma. Esto permite a los usuarios enviar ether al contrato, y luego usarlo para comprar tokens. Al ser en dos pasos, los usuarios podrian tener un balance de ether y hacer varias transacciones para comprar tokens (por ejemplo, si quisieran especular con el precio, y hacer compras y ventas en diferentes momentos para ganar con la diferencia de precio).
         Luego, para retirar su ether, usan la función $\texttt{withdraw}$.
 
-        Para comprar tokens, los usuarios usan la función $\texttt{buy}$. Esta función no estaba especificada en la API, pero la agregué por simplicidad. Esto permite a los usuarios comprar tokens con el ether que ya habían enviado al contrato, que se guarda en $\texttt{etherBalance}$. Luego, el usuario le compra los tokens al contrato directamente. Esto es una decisión de diseño. Consideré que era más simple que le compren al contrato (asumiendo que el contrato tiene tokens en su balance, generados por el propietario previamente). 
+        Para comprar tokens, los usuarios usan la función $\texttt{buy}$. Esto permite a los usuarios comprar tokens con el ether que ya habían enviado al contrato, que se guarda en $\texttt{etherBalance}$. Luego, el usuario le compra los tokens al contrato directamente. Esto es una decisión de diseño. Consideré que era más simple que le compren al contrato (asumiendo que el contrato tiene tokens en su balance, generados por el propietario previamente). 
 
         Para vender tokens, los usuarios llaman a $\texttt{sell}$. Esto genera un evento $\texttt{Sell}$ con la dirección del vendedor y la cantidad de tokens vendidos. Luego, los usuarios pueden retirar su ether mediante la función $\texttt{withdraw}$. El hecho de que hayamos definido que los usuarios pueden guardar su ether en nuestro contrato permite que el withdraw no se haga en el momento de la llamada a $\texttt{sell}$, sino que se pueda hacer después. Esto nos da más seguridad en caso de que se revierta la ejecución.
 
@@ -346,15 +350,16 @@ You should provide:
     \begin{solution} %Uncomment and type your solution here
         Gas de las interacciones:
         \begin{itemize}
-            \item Deploy: 
-            \item buy:
-            \item sell:
-            \item withdraw:
+            \item \href{https://sepolia.etherscan.io/tx/0x91237aaa9a580edb88456085886e496f81b3edc5e6b10656737d9f1d83c6ddd3}{Deploy}: 1,294,156 gas
+            \item \href{https://sepolia.etherscan.io/tx/0xbbc8e48a0c7ccfb6d1fbcf4652f529b5a80a79f96be66d7b21a58d11e1003d6d}{sending ether via receive()}: 43,450 gas
+            \item \href{https://sepolia.etherscan.io/tx/0xb7cc60acbab3746b0b4f018664d3035b0feaa8ddedd9fe21901cb39f7a313cca}{buy}: 56,771 gas
+            \item \href{https://sepolia.etherscan.io/tx/0x8edb4b9c97e7de8d5ee16aeec6a5da8b5855a339309f580a292f8d59b2e1aa25}{sell}: 54,353 gas
+            \item \href{https://sepolia.etherscan.io/tx/0x83799232a41c86efc544dfb724640a73ce40ffdd4d4c8e5d6ffe751eec6f2d45}{withdraw}: 29,473 gas
         \end{itemize}
 
 
         
-        Para hacer que el contrato gaste menos gas, se podrían hacer ciertos recortes. Por ejemplo, en vez de permitir que se guarde el balance de ether, en otro arreglo, podríamos hacer que los usuarios envíen el ether directamente en la llamada a $\texttt{buy}$, y que al vender se les trasfiera el ether resultante directamente a su dirección. El costo de gas sería menor ya que tendría menos escrituras y lecturas de memoria, aunque el contrato se vuelve menos seguro.
+        Para hacer que el contrato gaste menos gas, se podrían hacer ciertos recortes. Por ejemplo, en vez de permitir que se guarde el balance de ether, en otro arreglo, podríamos hacer que los usuarios envíen el ether directamente en la llamada a $\texttt{buy}$, y que al vender se les trasfiera el ether resultante directamente a su dirección. El costo de gas sería menor ya que tendría menos escrituras y lecturas de memoria (y menos llamadas en general), aunque el contrato se vuelve menos seguro y pierde flexibilidad.
 
         
     \end{solution}
@@ -375,15 +380,251 @@ hazards.
 
 \part[5] The transaction history of the deployment of and interaction with your contract.
 
-    %\begin{solution} %Uncomment and type your solution here
-        
-    %\end{solution}
+    \begin{solution} %Uncomment and type your solution here
+        \begin{itemize}
+            \item \href{https://sepolia.etherscan.io/tx/0x91237aaa9a580edb88456085886e496f81b3edc5e6b10656737d9f1d83c6ddd3}{Deploy}.
+            \item \href{https://sepolia.etherscan.io/tx/0xbbc8e48a0c7ccfb6d1fbcf4652f529b5a80a79f96be66d7b21a58d11e1003d6d}{sending ether via receive()}.
+            \item \href{https://sepolia.etherscan.io/tx/0xb7cc60acbab3746b0b4f018664d3035b0feaa8ddedd9fe21901cb39f7a313cca}{buy}.
+            \item \href{https://sepolia.etherscan.io/tx/0x8edb4b9c97e7de8d5ee16aeec6a5da8b5855a339309f580a292f8d59b2e1aa25}{sell}.
+            \item \href{https://sepolia.etherscan.io/tx/0x83799232a41c86efc544dfb724640a73ce40ffdd4d4c8e5d6ffe751eec6f2d45}{withdraw}.
+        \end{itemize}
+    \end{solution}
 
 \part[5] The code of your contract.
 
-    %\begin{solution} %Uncomment and type your solution here
-        
-    %\end{solution}
+    \begin{solution} %Uncomment and type your solution here
+\begin{verbatim}
+// SPDX-License-Identifier: GPL-3.0
+
+// This makes sure we use a solidity version
+// that automatically handles overflow/underflow
+// for me :D. It reverts the operation if it
+// overflows/underflows.
+pragma solidity ^0.8.0;
+
+contract Token12 {
+    address public owner;
+    mapping(address => uint256) public tokenBalance;
+    mapping(address => uint256) public etherBalance;
+    uint256 public _totalSupply;
+    uint128 public price;
+
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 value
+    );
+    event Mint(address indexed to, uint256 value);
+    event Sell(address indexed from, uint256 value);
+    event Buy(address indexed from, uint256 value);
+
+    // podria agregar eventos Withdraw, Buy, PriceChanged
+
+    constructor() {
+        owner = msg.sender;
+        _totalSupply = 0;
+        price = 600 wei;
+    }
+    function getName()
+        public
+        pure
+        returns (string memory)
+    {
+        return "Token12";
+    }
+
+    function getSymbol()
+        public
+        pure
+        returns (string memory)
+    {
+        return "T12";
+    }
+
+    function getPrice() public view returns (uint128) {
+        return price;
+    }
+
+    function changePrice(uint128 newPrice) public {
+        require(msg.sender == owner);
+        require(newPrice > 0);
+        price = newPrice;
+    }
+
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
+
+    function balanceOf(address account)
+        public
+        view
+        returns (uint256)
+    {
+        return tokenBalance[account];
+    }
+
+    function etherBalanceOf(address account)
+        public
+        view
+        returns (uint256)
+    {
+        return etherBalance[account];
+    }
+
+    // This is to avoid code duplication on
+    // `transfer` and `buy`
+    function _transfer(
+        address from,
+        address to,
+        uint256 value
+    )
+        internal
+    {
+        require(tokenBalance[from] >= value);
+        require(value > 0);
+        require(to != address(0));
+        require(to != from);
+
+        tokenBalance[from] -= value;
+        tokenBalance[to] += value;
+
+        emit Transfer(from, to, value);
+    }
+
+    function transfer(
+        address to,
+        uint256 value
+    )
+        public
+        returns (bool)
+    {
+        _transfer(msg.sender, to, value);
+        return true;
+    }
+
+    function mint(
+        address to,
+        uint256 value
+    )
+        public
+        returns (bool)
+    {
+        require(msg.sender == owner);
+        require(to != address(0));
+        require(value > 0);
+
+        emit Mint(to, value);
+
+        // update my state
+        tokenBalance[to] += value;
+        _totalSupply += value;
+
+        return true;
+    }
+
+    function buy(uint256 value) public returns (bool) {
+        // This is not creating new tokens, it's
+        // just transferring tokens from the
+        // contract itself to the sender.
+        // However, the contract must have enough
+        // tokens to transfer to the sender, which
+        // means the contract owner must have
+        // minted enough tokens for the contract
+        // beforehand.
+
+        require(value > 0);
+        // sender must have paid enouth ether to buy the tokens
+        uint256 totalEther = value * price;
+        require(totalEther <= etherBalance[msg.sender]);
+        // the contract itself must have enough
+        // tokens to sell to the sender
+        require(tokenBalance[address(this)] >= value);
+
+        etherBalance[msg.sender] -= totalEther;
+
+        // this buys from the contract itself, so we use _transfer()
+        _transfer(address(this), msg.sender, value);
+
+        emit Buy(msg.sender, value);
+
+        return true;
+    }
+
+    function sell(uint256 value) public returns (bool) {
+        require(value > 0);
+
+        // In order to sell, I need to have
+        // enough tokens in the contract.
+        uint256 totalEther = value * price;
+        require(
+            address(this).balance >= totalEther,
+            "Ether unavailable. Contact owner."
+        );
+
+        // This is to avoid users calling sell()
+        // when I (owner) have closed the
+        // contract. However, they can still call
+        // transfer() to transfer tokens to other
+        // addresses, though they won't be able
+        // to sell them.
+        require(
+            _totalSupply >= value,
+            "Not enough tokens. Contact owner."
+        );
+        require(tokenBalance[msg.sender] >= value);
+
+        // overflow is handled by ^0.8.0
+        etherBalance[msg.sender] += totalEther;
+
+        emit Sell(msg.sender, value);
+
+        // update my state
+        tokenBalance[msg.sender] -= value;
+        _totalSupply -= value;
+
+        return true;
+    }
+
+    function withdraw(uint256 value)
+        public
+        returns (bool)
+    {
+        require(value > 0);
+        require(etherBalance[msg.sender] >= value);
+
+        // update state before external call
+        etherBalance[msg.sender] -= value;
+
+        payable(msg.sender).transfer(value);
+
+        return true;
+    }
+
+    function close() public {
+        require(msg.sender == owner);
+        payable(owner).transfer(address(this).balance);
+        _totalSupply = 0;
+
+        // I don't reset tokenBalance here,
+        // just to keep track of the holders
+        // (in case I'd fund this contract again
+        // so holders can still use their tokens)
+    }
+
+    fallback() external payable {
+        // save the amount of ether received
+        // by the sender
+        etherBalance[msg.sender] += msg.value;
+    }
+
+    receive() external payable {
+        // save the amount of ether received
+        // by the sender
+        etherBalance[msg.sender] += msg.value;
+    }
+}
+\end{verbatim}
+    \end{solution}
 
 \end{parts}
 
