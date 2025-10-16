@@ -187,15 +187,55 @@ for a total of \numpoints \ points.
 
 \part[5] Describe the purpose and implementation of the {\bf 2x1 PoW} technique.
 
-     %\begin{solution} %Uncomment and type your solution here
+    \begin{solution} %Uncomment and type your solution here
+    El propósito de usar la técnica 2x1 PoW es lograr que en el $\textit{1\/2 Consensus Protocol}$, que requiere que se ejecuten dos PoWs diferentes, se puedan ejecutar de a una sola vez. Esto es para prevenir que un adversario pueda ejecutar solo uno de los PoW en paralelo, pudiendo pasar su $\textit{hashing power}$ de uno al otro.
+    
+    Esto se debe a que si no se hiciera así, se tendrían que ejecutar dos loops distintos, sumando un total de $2q$ consultas. De este modo, se combinan ambas tareas en una sola, resultando en $q$ consultas.
+
+    La implementación se basa en ejecutar solo un hash en vez de dos. En el $\textit{1\/2 Consensus Protocol}$ se usaban dos funciones hash, $H_0$ y $H_1$. En la función $\texttt{double\_pow}$ se usa solo una función de hash, haciendo que se tome primero un valor como el output de la función de hash "tradicional" y el otro va a ser el reverso de ese hash. 
+
+    Se agrega una etiqueta a las tuplas existentes, para diferenciar cuál PoW es cuál.
+
+    Notar que en la función de $\texttt{double\_pow}$ se puede lograr un PoW para uno de los dos, para los dos, o para ninguno.
         
-    %\end{solution}
+    \end{solution}
 
 \part[7] Let $T_1$ and $T_2$ be the target values in 2x1 PoW, and $\kappa$ the size of the hash function's output. What relation should they satisfy for the technique to work? Elaborate.
 
-    %\begin{solution} %Uncomment and type your solution here
+    % REVISAR LA DESIGUALDAD DE KAPPA
+    \begin{solution} %Uncomment and type your solution here
+        Sabemos que $T_1$, $T_2$ van a ser de $\kappa$ bits. Vamos a pedir que $T_1 = 2^{t_1}$ y $T_2 = 2^{t_2}$, donde $t_1$ y $t_2$ son enteros positivos.
+        Para cumplir la primer prueba de double\_pow, tenemos que pedir los $\kappa - t_1$ bits más significativos del output de la función de hash deben ser $0$. Esto es porque el target $T_1$ es de $t_1$ bits, y por lo tanto, el output de la función de hash debe ser menor a $T_1$.
+        Análogo para la segunda prueba, solamente que tenemos que pedir que los bits $\textbf{menos}$ significativos sean cero. 
+
+        Entonces, dado un hash $u$, necesitamos que sus primeros $\kappa - t_1$ bits sean cero, y sus últimos $\kappa - t_2$ bits sean cero.
+
+        Entonces, para que estas dos condiciones sean independientes, vamos a necesitar que $\kappa - t_1 + \kappa - t_2 \le \kappa$, que simplificando queda $t_1 + t_2 \ge \kappa$. Entonces, nos quedan dos "particiones" de los bits del hash.
+
+        Vemos que, si $T_1$ y $T_2$ no fuesen potencias de dos, terminaríamos imponiendo una condición sobre la otra partición de los bits. Por ejemplo, si $T_1 = 00101000$ ($40$), $T_2 = 00000100$ ($4$) y $u=000xxxxx$ sabemos que es válido, pues es menor que $T_1$. Ahora, $u=00100xxx$ también es válido, pero el problema es que ya estamos imponiendo una condición sobre la otra partición de los bits, los que van a corresponder con la prueba del reverso. Esta prueba va a requerir que los bits menos significativos sean cero, entonces la estamos condicionando. Entonces, si $T_1$ y $T_2$ no fuesen potencias de dos, terminaríamos imponiendo una condición sobre la otra partición de los bits. Por ende, para mantener la independencia estadística entre las pruebas, vamos a necesitar que $T_1$ y $T_2$ sean potencias de dos.
+
+
+        Otra cosa a notar es que hay un "balance" entre $t_1$ y $t_2$. Si uno es muy grande, el otro tiene que ser muy pequeño, y viceversa. Esto nos permite tener un PoW más fácil para uno de los dos, y un PoW más difícil para el otro.
+
         
-    %\end{solution}
+        % Para que cumplir el predicado de $\texttt{double\_pow}$, tenemos que pedir los $\kappa - t$ bits más significativos del output de la función de hash deben ser $0$ (para la prueba que no usa el reverso).
+
+
+
+        % Vamos a pedir también que $T = 2^t$, para $t$ algún entero positivo. Si no fuera así (si no fuese potencia de dos), el hecho de generar un PoW y validarlo, nos daría información sobre el otro PoW. Veámoslo con un ejemplo. Si $T = 00101000$ ($40$), y $u=000xxxxx$ sabemos que es válido, pues es menor que $T$. Ahora, si $u=00100xxx$ también es válido, pero el problema es que ya estamos imponiendo una condición sobre la otra mitad de los bits, los que van a corresponder con la prueba del reverso. Esta prueba va a requerir que los bits menos significativos sean cero, entonces la estamos condicionando.
+        
+        % Por esto que es que necesitamos que $T$ sea potencia de dos, para mantener la independencia estadística entre las pruebas.
+
+        % Otra restricción, para que las pruebas sean estadísticamente independientes, es $t \ge \frac{\kappa}{2}$.
+        % Veamos que la primer restricción (la que no usa el reverso) tiene como requerimiento que los primeros $\kappa - t$ bits sean cero (ya que tiene que ser menor a su target). Entonces, no son importantes los bits restantes, solo que esos sean cero.
+
+        % Esos "bits restantes" son los que son importantes justamente para la prueba del reverso. En esta prueba, se requiere que los bits $\textbf{menos}$ significativos sean cero. Es decir, los últimos $\kappa - t$ bits.
+        
+
+
+    
+        
+    \end{solution}
     
   \part[8] Design and argue correctness of an $\ell$x1 PoW scheme. Note that such a scheme would enable an $\ell$-parallel blockchain. What properties of the blockchain or ledger application would, if any,  benefit from a parallel blockchain? Elaborate.
   
