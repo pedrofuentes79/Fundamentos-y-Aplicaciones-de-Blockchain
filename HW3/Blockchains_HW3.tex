@@ -202,46 +202,44 @@ for a total of \numpoints \ points.
 
 \part[7] Let $T_1$ and $T_2$ be the target values in 2x1 PoW, and $\kappa$ the size of the hash function's output. What relation should they satisfy for the technique to work? Elaborate.
 
-    % REVISAR LA DESIGUALDAD DE KAPPA
     \begin{solution} %Uncomment and type your solution here
         Sabemos que $T_1$, $T_2$ van a ser de $\kappa$ bits. Vamos a pedir que $T_1 = 2^{t_1}$ y $T_2 = 2^{t_2}$, donde $t_1$ y $t_2$ son enteros positivos.
-        Para cumplir la primer prueba de double\_pow, tenemos que pedir los $\kappa - t_1$ bits más significativos del output de la función de hash deben ser $0$. Esto es porque el target $T_1$ es de $t_1$ bits, y por lo tanto, el output de la función de hash debe ser menor a $T_1$.
+        Para cumplir la primer prueba de double\_pow, tenemos que pedir los $\kappa - t_1$ bits más significativos del output de la función de hash deben ser $0$. Esto es porque el output de la función de hash debe ser menor a $T_1$.
         Análogo para la segunda prueba, solamente que tenemos que pedir que los bits $\textbf{menos}$ significativos sean cero. 
 
         Entonces, dado un hash $u$, necesitamos que sus primeros $\kappa - t_1$ bits sean cero, y sus últimos $\kappa - t_2$ bits sean cero.
 
-        Entonces, para que estas dos condiciones sean independientes, vamos a necesitar que $\kappa - t_1 + \kappa - t_2 \le \kappa$, que simplificando queda $t_1 + t_2 \ge \kappa$. Entonces, nos quedan dos "particiones" de los bits del hash.
+        Entonces, para que estas dos condiciones sean independientes, vamos a necesitar que $\kappa - t_1 + \kappa - t_2 \le \kappa$. Esto es porque queremos que los bits que le afectan al primer PoW no afecten al segundo, 
+        Simplificando queda $t_1 + t_2 \ge \kappa$. Entonces, nos quedan dos "particiones" de los bits del hash.
 
-        Vemos que, si $T_1$ y $T_2$ no fuesen potencias de dos, terminaríamos imponiendo una condición sobre la otra partición de los bits. Por ejemplo, si $T_1 = 00101000$ ($40$), $T_2 = 00000100$ ($4$) y $u=000xxxxx$ sabemos que es válido, pues es menor que $T_1$. Ahora, $u=00100xxx$ también es válido, pero el problema es que ya estamos imponiendo una condición sobre la otra partición de los bits, los que van a corresponder con la prueba del reverso. Esta prueba va a requerir que los bits menos significativos sean cero, entonces la estamos condicionando. Entonces, si $T_1$ y $T_2$ no fuesen potencias de dos, terminaríamos imponiendo una condición sobre la otra partición de los bits. Por ende, para mantener la independencia estadística entre las pruebas, vamos a necesitar que $T_1$ y $T_2$ sean potencias de dos.
-
-
-        Otra cosa a notar es que hay un "balance" entre $t_1$ y $t_2$. Si uno es muy grande, el otro tiene que ser muy pequeño, y viceversa. Esto nos permite tener un PoW más fácil para uno de los dos, y un PoW más difícil para el otro.
-
-        
-        % Para que cumplir el predicado de $\texttt{double\_pow}$, tenemos que pedir los $\kappa - t$ bits más significativos del output de la función de hash deben ser $0$ (para la prueba que no usa el reverso).
+        Vemos que, si $T_1$ y $T_2$ no fuesen potencias de dos, terminaríamos imponiendo una condición sobre la otra partición de los bits. Por ejemplo, si $T_1 = 00101000$ ($40$), $T_2 = 00001000$ ($8$) y $u=000xxxxx$ sabemos que es válido, pues es menor que $T_1$. Ahora, $u=00100xxx$ también es válido, pero el problema es que ya estamos imponiendo una condición sobre la otra partición de los bits, los que van a corresponder con la prueba del reverso. Esta prueba va a requerir que los bits menos significativos sean cero, entonces la estamos condicionando. Entonces, si $T_1$ y $T_2$ no fuesen potencias de dos, terminaríamos imponiendo una condición sobre la otra partición de los bits. Por ende, para mantener la independencia estadística entre las pruebas, vamos a necesitar que $T_1$ y $T_2$ sean potencias de dos.
 
 
-
-        % Vamos a pedir también que $T = 2^t$, para $t$ algún entero positivo. Si no fuera así (si no fuese potencia de dos), el hecho de generar un PoW y validarlo, nos daría información sobre el otro PoW. Veámoslo con un ejemplo. Si $T = 00101000$ ($40$), y $u=000xxxxx$ sabemos que es válido, pues es menor que $T$. Ahora, si $u=00100xxx$ también es válido, pero el problema es que ya estamos imponiendo una condición sobre la otra mitad de los bits, los que van a corresponder con la prueba del reverso. Esta prueba va a requerir que los bits menos significativos sean cero, entonces la estamos condicionando.
-        
-        % Por esto que es que necesitamos que $T$ sea potencia de dos, para mantener la independencia estadística entre las pruebas.
-
-        % Otra restricción, para que las pruebas sean estadísticamente independientes, es $t \ge \frac{\kappa}{2}$.
-        % Veamos que la primer restricción (la que no usa el reverso) tiene como requerimiento que los primeros $\kappa - t$ bits sean cero (ya que tiene que ser menor a su target). Entonces, no son importantes los bits restantes, solo que esos sean cero.
-
-        % Esos "bits restantes" son los que son importantes justamente para la prueba del reverso. En esta prueba, se requiere que los bits $\textbf{menos}$ significativos sean cero. Es decir, los últimos $\kappa - t$ bits.
-        
+        Otra cosa a notar es que hay un "balance" entre $t_1$ y $t_2$. Si uno es muy pequeño, el otro tiene que ser muy grande, ya que la suma de ambos tiene que ser mayor a $\kappa$. Esto nos condiciona a que si queremos que un PoW sea más fácil, el otro tiene que compensar esa diferencia.
 
 
-    
-        
     \end{solution}
     
   \part[8] Design and argue correctness of an $\ell$x1 PoW scheme. Note that such a scheme would enable an $\ell$-parallel blockchain. What properties of the blockchain or ledger application would, if any,  benefit from a parallel blockchain? Elaborate.
   
-   %\begin{solution} %Uncomment and type your solution here
+   \begin{solution} %Uncomment and type your solution here
+    
+    Para diseñar un esquema $\ell$x1 PoW, vamos a necesitar particionar el hash en $\ell$ partes, de manera que todas sean estadísticamente independientes.
+
+    Digamos que son todas partes iguales para simplificarlo. Decimos entonces que tienen tamaño $t$, haciendo que $\kappa = \ell \cdot t$.
+
+    Luego, queremos que las $\ell$ particiones del hash sean menores a un target $T \le 2^t$. Necesitamos pedir esto, ya que sería trivial pedir que un número binario de exactamente $t$ bits sea menor a $2^t$.
+
+    Como cada prueba mira su propia partición de bits, y ninguna partición se superpone con otra, las pruebas son estadísticamente independientes.
+
+
+    Una de las propiedades que podría verse afectada es chain growth. Como los mineros trabajan en $\ell$ blockchains a la vez, cada una de ellas se vería  afectada. La red en su conjunto seguiría produciendo bloques a más o menos la misma velocidad. Pero, ahora esos bloques se van a distribuir en cada una de las $\ell$ cadenas. 
+
+    Vemos que liveness se ve afectada. Depende de $\textit{Chain Growth}$ y $\textit{Chain Quality}$. Vemos que la cantidad de rondas $u$ que se necesitan para que todos los mineros honestos incluyan esa transacción en el bloque (con profundidad $k$) va a tener que ser $\ell$ veces mayor, puesto que se distribuye el $\textit{hashing power}$ en $\ell$ cadenas.
+
+
         
-    %\end{solution}
+    \end{solution}
     
     \end{parts}
     
@@ -313,7 +311,6 @@ You should provide:
 \item  What internal variables did you use?
 \item What is the process of buying/selling tokens and changing the price?
 \item How can users access their token balance?
-\item How did you link the library to your contract?
 \end{tiret}
 
     \begin{solution} %Uncomment and type your solution here
@@ -335,8 +332,6 @@ You should provide:
 \begin{tiret}
 \item The cost of deploying and interacting with your contract.
 \item Techniques to make your contract more cost effective.
-\item What was the gas impact of using the deployed library instance, compared to
-including its code in your contract?
 \end{tiret}
 
     \begin{solution} %Uncomment and type your solution here
