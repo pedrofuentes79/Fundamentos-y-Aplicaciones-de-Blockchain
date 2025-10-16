@@ -251,15 +251,24 @@ for a total of \numpoints \ points.
 
 \part[5] What should be the assumption on the adversarial computational power (similar to the ``Honest Majority Assumption'') for Strong Validity to hold?
 
-    %\begin{solution} %Uncomment and type your solution here
+    \begin{solution} %Uncomment and type your solution here
+        Si tomamos $m$ como la cantidad de inputs posibles, 
+        tenemos que restringir el $\textit{hashing power}$ de los adversarios por un factor de $m - 1$. Entonces, el $\textit{assumption}$ que tenemos que hacer es $t \le \frac{1-\delta}{m-1} \cdot (n-t)$. Usamos $m-1$ ya que en el caso de $m = 2$ querríamos dejarlo igual que antes.
         
-    %\end{solution}
+        Esta cota es suficiente. Pongamos el caso de que los jugadores honestos estan divididos en los primeros $m-1$ valores, y el adversario elige el $m$-ésimo valor. Querríamos que el adversario no pueda ganarle en votos a incluso la división con menos jugadores de los honestos. Digamos que los honestos se dividen equitativamente (el peor caso, ya que así no tienen una mayoría abrumadora de votos), luego habría $\frac{n-t}{m-1}$ votos para esa división. El adversario tendría que tener al menos $\frac{n-t}{m-1}$ votos para ganarle, lo cual es imposible si $t \le \frac{1-\delta}{m-1} \cdot (n-t)$.
+    \end{solution}
 
 \part[5]  State and prove the Strong Validity lemma.
 
-    %\begin{solution} %Uncomment and type your solution here
+
+    \begin{solution} %Uncomment and type your solution here
+        Dado un protocolo BA que opera sobre un conjunto de valores de entrada $V$, con $|V| = m$, y bajo la suposición de que $t \le \frac{1-\delta}{m-1} \cdot (n-t)$, asumiendo $k = O(\kappa)$ y $L = \Omega(\kappa)$, se satisface Strong Validity con probabilidad $1 - e^{-\Omega(\kappa)}$.
+
+        Strong Validity nos dice que tenemos que el output (valor elegido) sea uno de los inputs honestos. Para asegurarnos esto usamos la suposición anterior, que nos asegura que mantenemos el hashing power del protocolo anterior.
+
+        Como vemos en la demostración anterior de Validity, vale que $C^{\lceil k}$ tiene al menos k bloques, y luego vale Chain quality con la misma fracción de bloques adversarios.
         
-    %\end{solution}
+    \end{solution}
 
 \end{parts}
 
