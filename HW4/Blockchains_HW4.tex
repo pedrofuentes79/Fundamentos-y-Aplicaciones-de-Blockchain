@@ -126,16 +126,25 @@ for a total of \numpoints \ points.
       \begin{parts}
   \part[5] Describe Bahack's ``difficulty raising'' attack.
   
-    %\begin{solution} %Uncomment and type your solution here
+    \begin{solution} %Uncomment and type your solution here
+      El ataque de Bahack consiste en que el adversario fuerza la dificultad de la red para que sea muy alta, inhabilitando a los mineros honestos.
+
+      El adversario va a minar en privado \textbf{toda una \textit{epoch}} con timestamps falsos (ya que sería imposible que mine en un tiempo tan corto).
+      Luego, la red la recibe, y siendo la cadena más larga, la va a aceptar.
+      Luego, la dificultad de la próxima \textit{epoch} va a ser muy alta, dado que estos bloques se minaron en un tiempo muy corto.
+      Entonces, la próxima \textit{epoch} tendría una dificultad muy alta, y los mineros honestos no van a poder minar bloques válidos en un tiempo razonable.
         
-    %\end{solution}
+    \end{solution}
 
   \part[5] What aspect of Bitcoin's target recalculation function makes the attack ineffective? Elaborate.
   
     
-    %\begin{solution} %Uncomment and type your solution here
-        
-    %\end{solution}
+    \begin{solution} %Uncomment and type your solution here
+        La solución a este problema en la red de bitcoin es que el \textit{target} tiene un límite de cambios; es decir, no puede cambiar demasiado entre dos \textit{epochs}. La regla es que $T' \in [\frac{T}{4} ; 4T]$, siendo $T$ el \textit{target} de la \textit{epoch} actual y $T'$ el \textit{target} de la próxima \textit{epoch}.
+
+
+        Esto permite que la red no tenga cambios tan abruptos en dificultad, y vuelve el ataque de Bahack mucho menos efectivo.
+    \end{solution}
 
 \end{parts}
 
@@ -145,15 +154,28 @@ for a total of \numpoints \ points.
       \begin{parts}
       \part[5] Consider the \textit{long range attack} on a PoS blockchain in a permissionless environment. Assume that an honest-stake majority always holds, and that all the parties are aware of the global clock. Describe the scenarios wherein the honest parties lose their advantages, and explain why freshly joining parties cannot distinguish an honest chain from other chains by the longest-chain selection rule.
       
-    %\begin{solution} %Uncomment and type your solution here
+    \begin{solution} %Uncomment and type your solution here
+
+      El problema que tiene un nodo que acaba de entrar a la red es que no puede verificar si las cadenas que recibe son honestas o no. Esto es porque, aunque tenga acceso al reloj global, no puede verificar que los timestamps de la cadena que recibe sean los correctos (por ejemplo, no podría saber si el timestamp de 6 meses antes es realmente de hace 6 meses o de hace 5 minutos, creado por un atacante). Solamente podría verificar que no sean timestamps futuros.
+
+      Hay otro problema relacionado con un nuevo participante, y es el siguiente. 
+      Pongamos un caso de un adversario que tenía mucho stake (digamos en el bloque 10, y que ahora estamos en el 100) pero que luego lo vendió, puede crear una cadena alternativa más larga (digamos 130 bloques) en la cual él sigue teniendo todo ese stake. Como él sigue teniendo todo ese stake, la cadena sería creíble para un minero que acaba de entrar. Notar que este ataque no le cuesta nada a un atacante, puesto que crear bloques no es computacionalmente caro como en esquemas de \textit{PoW}.
         
-    %\end{solution}
+    \end{solution}
     
     \part[5] A PoS protocol performs leader election based on the stakes each party owns. Recall that the initial stake distribution is hard-coded in the genesis block. Does a PoS protocol assume a PKI? Further, the stakes in a party's account have monetary values. Where can the initial stakes come from?
         
-    %\begin{solution} %Uncomment and type your solution here
-        
-    %\end{solution}
+    \begin{solution} %Uncomment and type your solution here
+      No, un protocolo de PoS no necesita una PKI. Esto es porque cada participante se identifica por su dirección, que es justamente su clave pública. Entonces no hace falta una autoridad central que nos asegure que una clave pública pertenece a un participante, porque la clave pública es justamente lo que identifica a un participante, ya que con una firma digital podemos verificar que el participante (identificado por su clave pública) es el dueño de las claves privadas.
+
+
+      Para decidir de donde vienen los stakes iniciales hay varias opciones. Una muy común es que en el bloque génesis se distribuya el stake entre los participantes que son fundadores de la red. 
+
+      Otra opción es que la cadena empiece como PoW y luego se vuelva PoS. Esto es lo que sucedió con Ethereum 2.0. En este caso, el stake inicial serían lo que los mineros ya habían obtenido con la red PoW.
+
+      También puede ser que se "quemen" otras monedas a cambio de stake en esta nueva cadena, para demostrar que se está asumiendo un riesgo.
+
+    \end{solution}
 
 \end{parts}
 
