@@ -1,0 +1,204 @@
+\documentclass[12pt,addpoints,answers]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage{microtype}
+\usepackage{xspace}
+\usepackage[svgnames]{xcolor}
+\usepackage[sc]{mathpazo}
+\usepackage{enumitem}
+\usepackage{bm}
+
+\pagestyle{head}
+
+% TIRET DEFINITIONS
+
+\newlength{\saveparindent}
+\setlength{\saveparindent}{\parindent}
+\newlength{\saveparskip}
+\setlength{\saveparskip}{\parskip}
+\newcounter{ctr}
+\newcounter{savectr}
+\newcounter{ectr}
+\newcounter{sctr}
+
+
+\newenvironment{tiret}{%
+\begin{list}{\hspace{2pt}\rule[0.5ex]{6pt}{1pt}\hfill}{\labelwidth=15pt%
+\labelsep=5pt \leftmargin=20pt \topsep=3pt%
+\setlength{\listparindent}{\saveparindent}%
+\setlength{\parsep}{\saveparskip}%
+\setlength{\itemsep}{0pt} }}{\end{list}}
+
+%----------Header--------------------%
+\def\course{{\sc Fundamentos y Aplicaciones de Blockchains}}
+\def\term{Depto. de Computaci\'{o}n, UBA, 2do. Cuatrimestre 2025}
+\def\prof{Lecturer: Juan Garay}
+\newcommand{\handout}[5]{
+   \renewcommand{\thepage}{\arabic{page}}
+   \begin{center}
+   \framebox{
+      \vbox{
+    \hbox to 5.78in { \hfill \large{\course} \hfill }
+    \vspace{2mm}
+%    \hbox to 5.78in { \hfill \large{\prof} \hfill }
+%       \vspace{2mm}
+       \hbox to 5.78in { {\Large \hfill \textbf{#5}  \hfill} }
+       \vspace{2mm}
+       \hbox to 5.78in { \term \hfill \emph{#2}}
+       \hbox to 5.78in { {#3 \hfill \emph{#4}}}
+      }
+   }
+   \end{center}
+   \vspace*{4mm}
+}
+\newcommand{\hw}[4]{\handout{#1}{#2}{#3}{#4}{Homework #1}}
+
+% -- For ignoring stuff -- %
+\newcommand{\ignore}[1]{}
+
+\begin{document}
+
+%----Specs: change accordingly-----%
+\newif\ifstudent % comment out false
+\studenttrue 
+% \studentfalse
+
+\def\hwnum{4}
+\def\issuedate{1/11/25}
+\def\duedate{13/11/25, 17:00 hs} % 
+\def\yourname{} % put your name here
+%------------------------------%
+
+\ifstudent
+\hw{\hwnum}{\issuedate}{Student: \yourname}{Due: \duedate}%
+\else
+\hw{\hwnum}{\issuedate}{\prof}{Due: \duedate}%
+\fi
+
+% \ignore{
+
+\noindent \textbf{Instructions}
+
+\begin{itemize}
+    \item Upload your solution to Campus; make sure it's only one file, and clearly write your name on the first page. Name the file \textsf{`$<$your last name$>$\_HW4.pdf.'} 
+    %{\bf Important:} Make sure to tap {\bf Turn in} after you upload your solution.   
+      
+     If you are proficient with \LaTeX, you may also typeset your submission and submit in PDF format. To do so, uncomment the ``\%\textbackslash begin\{solution\}'' and ``\%\textbackslash end\{solution\}'' lines and write your solution between those two command lines.
+    
+      \item Your solutions will be graded on \emph{correctness} and
+    \emph{clarity}. You should only submit work that you believe to be
+    correct.
+    % , and you will get significantly more partial credit if you     clearly identify the gap(s) in your solution.
+    
+    \item You may collaborate with others on this problem set.  However,
+    you must \textbf{{write up your own solutions}} and \textbf{{list
+      your collaborators and any external sources (including ChatGPT and similar generative AI chatbots)}} for each
+    problem. Be ready to explain your solutions orally to a member of the course staff
+    if asked.
+    
+    \ignore{
+    \item For problems that require you to provide an algorithm, you must
+    give a precise description of the algorithm, together with a proof
+    of correctness and an analysis of its running time. You may use
+    algorithms from class as subroutines. You may also use any facts
+    that we proved in class or from the book.
+    } %IGNORE
+    
+\end{itemize}
+
+\noindent This homework contains \numquestions\ questions,
+% \numpages\ pages
+for a total of \numpoints \ points.
+% and \numbonuspoints\ bonus points.
+
+%\medskip
+\newpage
+
+%} %IGNORE
+
+\begin{questions}
+
+\question \textbf{Bitcoin backbone: Chains of variable difficulty.}
+      \begin{parts}
+  \part[5] Describe Bahack's ``difficulty raising'' attack.
+  
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+  \part[5] What aspect of Bitcoin's target recalculation function makes the attack ineffective? Elaborate.
+  
+    
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\end{parts}
+
+\newpage
+
+\question \textbf{Proofs of Stake (PoS).}
+      \begin{parts}
+      \part[5] Consider the \textit{long range attack} on a PoS blockchain in a permissionless environment. Assume that an honest-stake majority always holds, and that all the parties are aware of the global clock. Describe the scenarios wherein the honest parties lose their advantages, and explain why freshly joining parties cannot distinguish an honest chain from other chains by the longest-chain selection rule.
+      
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+    
+    \part[5] A PoS protocol performs leader election based on the stakes each party owns. Recall that the initial stake distribution is hard-coded in the genesis block. Does a PoS protocol assume a PKI? Further, the stakes in a party's account have monetary values. Where can the initial stakes come from?
+        
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\end{parts}
+
+\newpage
+
+\question  \textbf{Verifiable Random Functions (VRFs).} 
+\begin{parts}
+
+\part[4] Enumerate the security properties a VRF should satisfy. 
+
+   %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+    
+\part[6] We stated in class that given a hash function, modeled as a \textit{random oracle}, and an unforgeable signature scheme, VRFs are readily realizable.  Show that that's indeed the case by proposing a construction and arguing its security---i.e., it achieves the desired security properties. Follow the VRF terminology we used in class.
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+
+\end{parts}
+
+\newpage
+
+\question \textbf{The {\em Ouroboros} protocol.}
+         \begin{parts}
+         
+         \part[5] We saw in class that in the Ouroboros protocol the slot leader election process is abstracted out and modeled as an ``ideal functionality.'' Describe one realistic approach to elect the slot leader, and explain why there are $\bot$ symbols in the characteristic strings.
+         
+     %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+   
+        \part[5] Describe the implementation of the {\em dynamic} stake setting. Why can't the parties use the most recent stake distribution (i.e., the stake distribution at the end of the previous epoch)?
+
+    %\begin{solution} %Uncomment and type your solution here
+        
+    %\end{solution}
+    
+    \end{parts}
+
+\newpage
+
+~\\
+
+\end{questions}
+
+\end{document}
