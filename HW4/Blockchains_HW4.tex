@@ -186,15 +186,40 @@ for a total of \numpoints \ points.
 
 \part[4] Enumerate the security properties a VRF should satisfy. 
 
-   %\begin{solution} %Uncomment and type your solution here
-        
-    %\end{solution}
+   \begin{solution} %Uncomment and type your solution here
+      Una VRF debe cumplir que, para un par $(\text{VK}, \text{SK})$ fijo, y un input $X$, se cumpla que produce un valor único, pseudoaleatorio y verificable.
+      La parte de único quiere decir que nadie puede encontrar un $Y'$ y una prueba $\pi'$ tal que $\text{Verify}(\text{VK}, X, Y', \pi') = 1$.
+      Luego, que sea verificable nos permite saber que es algo que fue generado solamente por quien se identifica por la clave pública. Es decir, que valga que si $(Y, \pi) = \text{Eval}(\text{SK}, X)$, entonces $\text{Verify}(\text{VK}, X, Y, \pi) = 1$.
+      La pseudoaletoriedad implica no solo que sea impredecible, si no que es indistinguible de una secuencia de bits verdaderamente aleatoria.
+    \end{solution}
     
 \part[6] We stated in class that given a hash function, modeled as a \textit{random oracle}, and an unforgeable signature scheme, VRFs are readily realizable.  Show that that's indeed the case by proposing a construction and arguing its security---i.e., it achieves the desired security properties. Follow the VRF terminology we used in class.
 
-    %\begin{solution} %Uncomment and type your solution here
+    \begin{solution} %Uncomment and type your solution here
         
-    %\end{solution}
+      Dado que tenemos un oráculo aleatorio y un esquema de firma digital, podemos construir una VRF de la siguiente manera.
+      Asumimos que estamos mirando desde la perspectiva del firmante con claves $(SK, VK)$
+
+      El objetivo es generar el número aleatorio $Y$ para un input $X$. No podemos simplemente usar $H(X)$ porque cualquier otro podría hacer lo mismo. Tampoco podemos hacer $H(\text{SK}, X)$, ya que, aunque otros no podrían replicarlo, no tendrían manera de verificarlo. Entonces generamos una prueba $\pi$, que esta vinculada a $X$ y solo la puede producir el dueño de la $SK$. $\pi = \text{Sign}(SK, X)$, donde $\text{Sign}$ es la firma que forma parte del "unforgeable signature scheme". Es determinista.
+
+      Luego de generar esa prueba, que es impredecible para otros y está vinculada al valor de $X$, necesitamos que sea aleatoria. Entonces, la pasamos por el oráculo.
+
+      $Y = H(\pi)$
+
+      Luego, se publica $(X, Y, \pi)$, y todos pueden verificar que el dueño de $\text{SK}$ es quien ejecutó esa función con $(\text{SK}, X)$, generando $\pi$ y luego $Y$.
+
+      Luego, vemos que es verificable porque todos los demás pueden chequearlo con $\text{Verify}(\text{VK}, X, Y, \pi)$, siendo $\text{VK}$ la clave pública del firmante. 
+      
+      Veamos que esto cumple las propiedades de seguridad.
+      \begin{itemize}
+        \item Verificable: ya vimos el camino que tiene que seguir un participante que quiere verificar la autenticidad del mensaje $X$
+        \item Unicidad: Esto nos lo garantiza el "unforgeable signature scheme", que es determinista. Un adversario no va a poder encontrar $(Y', \pi')$, con $Y \neg Y'$ que haga verdadero el predicado $\text{Verify}$, dado que la única manera va a ser que $\pi = \pi'$ (pues la firma es determinista), y eso solo va a ser posible si $Y = Y'$.
+        \item Pseudoaleatoriedad: "Unforgeable signature scheme" nos garantiza que es imposible para un adversario (sin $\text{SK}$) generar una firma válida $\pi'$ para un mensaje $X$. 
+
+      \end{itemize}
+
+
+    \end{solution}
 
 \end{parts}
 
@@ -205,9 +230,9 @@ for a total of \numpoints \ points.
          
          \part[5] We saw in class that in the Ouroboros protocol the slot leader election process is abstracted out and modeled as an ``ideal functionality.'' Describe one realistic approach to elect the slot leader, and explain why there are $\bot$ symbols in the characteristic strings.
          
-     %\begin{solution} %Uncomment and type your solution here
+     \begin{solution} %Uncomment and type your solution here
         
-    %\end{solution}
+    \end{solution}
    
         \part[5] Describe the implementation of the {\em dynamic} stake setting. Why can't the parties use the most recent stake distribution (i.e., the stake distribution at the end of the previous epoch)?
 
